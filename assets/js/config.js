@@ -1,5 +1,4 @@
-// URL base da API. No deploy, troque este valor pela URL do back-end no Railway.
-window.DEER_API_URL = window.DEER_API_URL || 'http://localhost:3000';
+window.DEER_API_URL = window.DEER_API_URL || 'https://deer-back-end-production.up.railway.app';
 
 // Monta URLs da API sem espalhar "localhost" pelos arquivos do front-end.
 window.deerApi = function(path = '') {
