@@ -1,0 +1,561 @@
+﻿.instituicao-page {
+            min-height: 100vh;
+            padding: 110px 20px 50px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .instituicao-card {
+            width: 100%;
+            max-width: 760px;
+            background: var(--surface-strong);
+            border: 1px solid var(--field-border);
+            border-radius: 18px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .instituicao-topo {
+            padding: 34px 38px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .instituicao-tag {
+            display: inline-flex;
+            color: var(--orange-accent);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .instituicao-topo h1 {
+            color: var(--dark-text);
+            font-size: 1.75rem;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .instituicao-topo p {
+            color: var(--gray-text);
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+
+        .progress-ong {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 22px 38px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-ong-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray-text);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .progress-ong-step span {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--field-border);
+            color: var(--gray-text);
+        }
+
+        .progress-ong-step.ativo,
+        .progress-ong-step.concluido {
+            color: var(--dark-text);
+        }
+
+        .progress-ong-step.ativo span,
+        .progress-ong-step.concluido span {
+            background: var(--red-base);
+            border-color: var(--red-base);
+            color: white;
+        }
+
+        .instituicao-form-area {
+            padding: 30px 38px 36px;
+        }
+
+        .form-etapa-ong {
+            display: none;
+        }
+
+        .form-etapa-ong.ativo {
+            display: block;
+            animation: etapaOng 0.32s ease;
+        }
+
+        @keyframes etapaOng {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .input-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--field-border);
+            border-radius: 8px;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--dark-text);
+        }
+
+        .input-group select {
+            min-height: 45px;
+            cursor: pointer;
+        }
+
+        .input-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .input-group input:disabled {
+            background: var(--surface);
+            border-color: var(--field-border);
+            color: var(--gray-text);
+            cursor: not-allowed;
+            opacity: 0.78;
+        }
+
+        .input-group input.campo-liberado {
+            background: var(--input-bg);
+            color: var(--dark-text);
+            cursor: text;
+            opacity: 1;
+        }
+
+        .form-help {
+            color: var(--gray-text);
+            font-size: 0.78rem;
+            line-height: 1.45;
+            margin-top: 5px;
+        }
+
+        .erro-campo {
+            display: none;
+            color: #c62828;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .erro-campo.visivel {
+            display: block;
+        }
+
+        .categorias-opcoes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .categoria-check {
+            border: 1.5px solid var(--field-border);
+            background: var(--input-bg);
+            border-radius: 10px;
+            padding: 9px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark-text);
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: border-color 0.2s, background 0.2s, transform 0.2s;
+        }
+
+        .categoria-check:hover {
+            border-color: var(--red-base);
+            transform: translateY(-1px);
+        }
+
+        .categoria-check input {
+            accent-color: var(--red-base);
+            width: 13px;
+            height: 13px;
+            flex: 0 0 auto;
+            margin: 0;
+        }
+
+        .categoria-icone-mini {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(229,57,53,0.10);
+            font-size: 0.9rem;
+            flex: 0 0 auto;
+        }
+
+        .categoria-texto {
+            line-height: 1.25;
+        }
+
+        .categoria-check:has(input:checked) {
+            border-color: var(--red-base);
+            background: rgba(229,57,53,0.10);
+        }
+
+        .toast-ong {
+            display: none;
+            border: 1.5px solid #c62828;
+            background: #fff3f3;
+            color: #c62828;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .toast-ong.visivel {
+            display: block;
+        }
+
+        .btns-ong {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-ong-primary,
+        .btn-ong-secondary {
+            flex: 1;
+            padding: 13px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.94rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-ong-primary {
+            border: none;
+            background: var(--red-base);
+            color: white;
+        }
+
+        .btn-ong-primary:hover {
+            background: var(--red-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-ong-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-ong-secondary {
+            border: 1.5px solid var(--field-border);
+            background: transparent;
+            color: var(--gray-text);
+        }
+
+        .btn-link-ong {
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-corrigir-endereco {
+            margin-top: 10px;
+        }
+
+        .btn-ong-secondary:hover {
+            background: var(--surface);
+            border-color: var(--red-base);
+            color: var(--red-base);
+            transform: translateY(-1px);
+        }
+
+        .btn-ong-secondary.ativo {
+            border-color: #2E7D32;
+            background: rgba(67, 160, 71, 0.12);
+            color: #2E7D32;
+        }
+
+        .analise-box {
+            background: rgba(251,140,0,0.10);
+            border: 1px solid rgba(251,140,0,0.28);
+            color: var(--dark-text);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.84rem;
+            line-height: 1.55;
+        }
+
+        .solicitacao-view {
+            display: grid;
+            gap: 18px;
+            border: 1.5px solid var(--field-border);
+            border-radius: 14px;
+            padding: 18px;
+            background: var(--surface-strong);
+        }
+
+        .solicitacao-status {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .solicitacao-status.pendente {
+            background: rgba(251, 140, 0, 0.14);
+            color: #D56F00;
+        }
+
+        .solicitacao-status.aprovada {
+            background: rgba(67, 160, 71, 0.14);
+            color: #2E7D32;
+        }
+
+        .solicitacao-status.rejeitada {
+            background: rgba(198, 40, 40, 0.12);
+            color: #C62828;
+        }
+
+        .solicitacao-bloco {
+            border: 1px solid var(--field-border);
+            background: var(--surface);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .solicitacao-bloco h3 {
+            color: var(--dark-text);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .solicitacao-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .solicitacao-campo {
+            min-width: 0;
+        }
+
+        .solicitacao-campo.full {
+            grid-column: 1 / -1;
+        }
+
+        .solicitacao-campo span {
+            display: block;
+            color: var(--gray-text);
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .solicitacao-campo strong,
+        .solicitacao-campo p {
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .solicitacao-categorias {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .solicitacao-categorias span {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(229,57,53,0.10);
+            color: var(--red-base);
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .btn-ong-danger {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border: 1.5px solid #c62828;
+            background: transparent;
+            color: #c62828;
+        }
+
+        .btn-ong-danger:hover {
+            background: #c62828;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .solicitacao-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .solicitacao-actions .btn-ong-secondary,
+        .solicitacao-actions .btn-ong-danger {
+            width: 100%;
+            min-height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            padding: 10px 14px;
+            font-size: 0.86rem;
+            text-decoration: none;
+        }
+
+        .solicitacao-actions.unica {
+            grid-template-columns: 1fr;
+        }
+
+        .link-voltar-ong {
+            display: block;
+            margin-top: 18px;
+            color: var(--gray-text);
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.86rem;
+            font-weight: 600;
+        }
+
+        .link-voltar-ong:hover {
+            color: var(--red-base);
+        }
+
+        .modal-ong-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.42);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 999;
+        }
+
+        .modal-ong-overlay.ativo {
+            display: flex;
+        }
+
+        .modal-ong {
+            width: min(420px, 100%);
+            background: var(--surface-strong);
+            border: 1px solid var(--field-border);
+            border-radius: 16px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+            padding: 24px;
+        }
+
+        .modal-ong h3 {
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-ong p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .modal-ong-botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-ong-botoes button {
+            flex: 1;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-family: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .modal-ong-cancelar {
+            border: 1.5px solid var(--field-border);
+            background: transparent;
+            color: var(--gray-text);
+        }
+
+        .modal-ong-confirmar {
+            border: none;
+            background: var(--red-base);
+            color: white;
+        }
+
+        @media (max-width: 720px) {
+            .instituicao-topo,
+            .progress-ong,
+            .instituicao-form-area {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+
+            .progress-ong {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .solicitacao-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btns-ong {
+                flex-direction: column-reverse;
+            }
+
+            .solicitacao-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+

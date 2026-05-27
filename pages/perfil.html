@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - DEER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="shortcut icon" href="../assets/img/logo-deer-recortada-sem-fundo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/perfil.css">
+</head>
+<body>
+
+    <div class="perfil-container">
+        <div>
+            <div class="perfil-card">
+
+                <div class="perfil-header" id="perfil-header">
+
+                    <button class="btn-editar-banner" id="btn-editar-banner" type="button">
+                        🎨 Cor do banner
+                    </button>
+
+                    <div class="banner-color-panel" id="banner-color-panel">
+                        <p>Escolha uma cor</p>
+
+                        <div class="cores-rapidas" id="cores-rapidas">
+                            <div class="cor-rapida" data-cor="#E53935"></div>
+                            <div class="cor-rapida" data-cor="#1E88E5"></div>
+                            <div class="cor-rapida" data-cor="#43A047"></div>
+                            <div class="cor-rapida" data-cor="#8E24AA"></div>
+                            <div class="cor-rapida" data-cor="#FB8C00"></div>
+                            <div class="cor-rapida" data-cor="#00ACC1"></div>
+                            <div class="cor-rapida" data-cor="#F06292"></div>
+                            <div class="cor-rapida" data-cor="#546E7A"></div>
+                            <div class="cor-rapida" data-cor="#6D4C41"></div>
+                            <div class="cor-rapida" data-cor="#2D2D2D"></div>
+                        </div>
+
+                        <div class="hex-row">
+                            <input type="text" id="input-hex" placeholder="#E53935" maxlength="7">
+                            <input type="color" id="input-color-picker" value="#E53935" title="Abrir seletor de cor">
+                        </div>
+                    </div>
+
+                    <div class="avatar-wrapper" id="avatar-wrapper" title="Clique para trocar a foto">
+                        <div class="perfil-avatar" id="perfil-avatar">
+                            <span id="avatar-iniciais">?</span>
+                        </div>
+                        <div class="avatar-overlay">
+                            <span>📷<br>Trocar foto</span>
+                        </div>
+                        <div class="avatar-loading" id="avatar-loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+
+                    <input type="file" id="input-foto" accept="image/jpeg,image/png,image/webp">
+
+                    <h2 id="header-nome">Carregando...</h2>
+                    <p id="header-email">—</p>
+                </div>
+
+                <div class="perfil-body">
+
+                    <h3>Editar Informações</h3>
+                    <form id="form-perfil">
+                        <div class="input-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="edit-nome" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>CPF</label>
+                                <input type="text" id="edit-cpf" disabled>
+                            </div>
+                            <div class="input-group">
+                                <label>Telefone</label>
+                                <input type="tel" id="edit-telefone">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>E-mail</label>
+                            <input type="email" id="edit-email" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Nova Senha <span class="label-observacao">(deixe em branco para manter)</span></label>
+                            <input type="password" id="edit-senha" placeholder="Nova senha..." autocomplete="new-password">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Biografia <span class="label-observacao">(opcional)</span></label>
+                            <textarea id="edit-biografia" placeholder="Conte um pouco sobre você..." maxlength="200"></textarea>
+                            <span class="char-count"><span id="contador-bio">0</span>/200</span>
+                        </div>
+                    </form>
+
+                    <div class="divisor">
+                        <h3>Endereço</h3>
+                        <p id="texto-endereco">Nenhum endereço cadastrado.</p>
+
+                        <div id="secao-endereco-perfil" class="secao-endereco-perfil">
+                            <div class="input-group">
+                                <label>CEP</label>
+                                <input type="text" id="edit-cep" placeholder="00000-000" maxlength="9">
+                            </div>
+                            <div class="input-group">
+                                <label>Rua</label>
+                                <input type="text" id="edit-rua" placeholder="Preenchido automaticamente">
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label>Bairro</label>
+                                    <input type="text" id="edit-bairro" placeholder="Preenchido automaticamente">
+                                </div>
+                                <div class="input-group">
+                                    <label>Cidade</label>
+                                    <input type="text" id="edit-cidade" placeholder="Preenchido automaticamente">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group perfil-campo-curto">
+                                    <label>Estado</label>
+                                    <input type="text" id="edit-estado" placeholder="UF">
+                                </div>
+                                <div class="input-group perfil-campo-curto">
+                                    <label>Número</label>
+                                    <input type="text" id="edit-numero" placeholder="123">
+                                </div>
+                                <div class="input-group">
+                                    <label>Complemento</label>
+                                    <input type="text" id="edit-complemento" placeholder="Apto, bloco...">
+                                </div>
+                            </div>
+                            <div class="endereco-actions">
+                                <button type="button" id="btn-salvar-endereco" class="btn-salvar">Salvar Endereço</button>
+                                <button type="button" id="btn-alterar-endereco" class="btn-secundario">Cancelar</button>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-abrir-endereco" class="btn-abrir-endereco">
+                            Alterar Endereço
+                        </button>
+                    </div>
+
+                    <div class="divisor">
+                        <h3>Aparência</h3>
+                        <p>Escolha como a plataforma aparece para você neste navegador.</p>
+                        <div class="tema-opcoes" id="tema-opcoes">
+                            <button type="button" class="tema-opcao" data-tema="claro">
+                                <strong>Claro</strong>
+                                <span>Visual limpo com fundo claro.</span>
+                            </button>
+                            <button type="button" class="tema-opcao" data-tema="escuro">
+                                <strong>Escuro</strong>
+                                <span>Contraste alto para ambientes com pouca luz.</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="divisor">
+                        <h3>Instituição</h3>
+                        <p>Vincule uma instituição ao seu perfil para cadastrar necessidades e receber doações pela plataforma.</p>
+                        <div class="instituicao-box" id="instituicao-box">
+                            <h4>Nenhuma instituição vinculada</h4>
+                            <p>Cadastre os dados da instituição para enviar uma solicitação de análise.</p>
+                            <a href="cadastro-ong.html" class="btn-instituicao">Vincular Instituição</a>
+                        </div>
+                    </div>
+
+                    <div class="perfil-actions">
+                        <button type="submit" form="form-perfil" class="btn-salvar" id="btn-salvar">Salvar Alterações</button>
+                    </div>
+
+                    <div class="divisor divisor-perigo">
+                        <h3 class="titulo-perigo">Zona de Perigo</h3>
+                        <p>A exclusão de conta é permanente e não pode ser desfeita. Todos os seus dados serão apagados para sempre.</p>
+                        <button class="btn-excluir" id="btn-abrir-exclusao">Excluir Minha Conta</button>
+                    </div>
+
+                </div>
+            </div>
+            <a href="../index.html" class="voltar-link">← Voltar para o Início</a>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-exclusao">
+        <div class="modal-confirmacao">
+            <div class="modal-etapa ativo" id="etapa-senha-exclusao">
+                <div class="icone-aviso">!</div>
+                <h3>Confirme sua senha</h3>
+                <p>Para proteger sua conta, informe sua senha antes de continuar com a exclusão.</p>
+
+                <div class="input-exclusao">
+                    <label for="senha-exclusao">Senha da conta</label>
+                    <input type="password" id="senha-exclusao" placeholder="Digite sua senha" autocomplete="current-password">
+                    <span class="erro-exclusao" id="erro-senha-exclusao">Informe sua senha para continuar.</span>
+                </div>
+
+                <div class="modal-botoes">
+                    <button class="btn-cancelar" id="btn-cancelar-exclusao" type="button">Cancelar</button>
+                    <button class="btn-confirmar-exclusao" id="btn-validar-senha-exclusao" type="button">Continuar</button>
+                </div>
+            </div>
+
+            <div class="modal-etapa" id="etapa-confirmar-exclusao">
+                <div class="icone-aviso">!</div>
+                <h3>Exclusão permanente</h3>
+                <p>Essa ação não pode ser desfeita. Todos os seus dados serão excluídos permanentemente da plataforma.</p>
+
+                <div class="check-exclusao">
+                    <input type="checkbox" id="aceite-exclusao">
+                    <label for="aceite-exclusao">Eu entendo que minha conta e meus dados serão excluídos permanentemente.</label>
+                </div>
+
+                <div class="modal-botoes empilhado">
+                    <button class="btn-cancelar" id="btn-voltar-senha-exclusao" type="button">Voltar</button>
+                    <button class="btn-confirmar-exclusao" id="btn-confirmar-exclusao" type="button" disabled>Excluir definitivamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pop-up-sucesso" class="pop-up">✓ Alterações salvas com sucesso!</div>
+    <div id="pop-up-erro" class="pop-up toast-erro-perfil">✕ Erro ao salvar. Tente novamente.</div>
+    <div id="pop-up-foto-erro" class="pop-up toast-erro-perfil">✕ Erro ao enviar foto. Tente novamente.</div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/perfil.js"></script>
+</body>
+</html>

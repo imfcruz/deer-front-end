@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instituições Parceiras - DEER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="shortcut icon" href="../assets/img/logo-deer-recortada-sem-fundo.png" type="image/x-icon">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-mask" title="DEER"></div>
+            </a>
+            <div class="usuario" id="user-menu">
+                <a href="login.html" class="login-trigger">Entrar</a>
+                <a href="cadastro.html" class="signup-trigger">Criar Conta</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="ongs-page">
+        <section class="ongs-hero">
+            <span class="secao-tag">Rede DEER</span>
+            <h1>Instituições parceiras</h1>
+            <p>Explore projetos sociais analisados pela plataforma e filtre por tipo de doação aceita.</p>
+        </section>
+
+        <!-- Filtros e grid são preenchidos pelo assets/js/script.js com instituições aprovadas do back-end. -->
+        <section class="ongs-listagem">
+            <div class="filtros-ongs" id="filtros-ongs">
+                <button type="button" class="filtro-ong ativo" data-categoria="">Todas</button>
+                <button type="button" class="filtro-ong" data-categoria="alimentos">🍎 Alimentos</button>
+                <button type="button" class="filtro-ong" data-categoria="roupas">👕 Roupas</button>
+                <button type="button" class="filtro-ong" data-categoria="higiene">🧴 Higiene</button>
+                <button type="button" class="filtro-ong" data-categoria="educacao">📚 Educação</button>
+                <button type="button" class="filtro-ong" data-categoria="brinquedos">🧸 Brinquedos</button>
+                <button type="button" class="filtro-ong" data-categoria="pets">🐾 Pets</button>
+                <button type="button" class="filtro-ong" data-categoria="moveis">🪑 Móveis</button>
+            </div>
+
+            <div class="ongs-grid" id="ongs-grid">
+                <div class="estado-lista">Carregando instituições...</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/script.js"></script>
+</body>
+</html>

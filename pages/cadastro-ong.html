@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vincular Instituição - DEER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="shortcut icon" href="../assets/img/logo-deer-recortada-sem-fundo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/cadastro-ong.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-mask" title="DEER"></div>
+            </a>
+            <div class="usuario" id="user-menu"></div>
+        </div>
+    </header>
+
+    <main class="instituicao-page">
+        <div>
+            <section class="instituicao-card">
+                <div class="instituicao-topo">
+                    <span class="instituicao-tag">Instituições parceiras</span>
+                    <h1>Vincular instituição</h1>
+                    <p>Cadastre os dados oficiais da instituição. A solicitação ficará em análise antes de aparecer publicamente.</p>
+                </div>
+
+                <div class="progress-ong">
+                    <div class="progress-ong-step ativo" id="ong-step-1"><span>1</span>CNPJ</div>
+                    <div class="progress-ong-step" id="ong-step-2"><span>2</span>Endereço</div>
+                    <div class="progress-ong-step" id="ong-step-3"><span>3</span>Perfil público</div>
+                </div>
+
+                <div class="instituicao-form-area">
+                    <div class="toast-ong" id="toast-ong"></div>
+
+                    <!-- Formulário em etapas: CNPJ oficial, endereço e perfil público da instituição. -->
+                    <form id="form-instituicao" novalidate>
+                        <section class="form-etapa-ong ativo" id="ong-etapa-1">
+                            <div class="form-grid">
+                                <div class="input-group full">
+                                    <label for="ong-cnpj">CNPJ</label>
+                                    <input type="text" id="ong-cnpj" placeholder="00.000.000/0000-00" inputmode="numeric">
+                                    <span class="erro-campo" id="erro-ong-cnpj">Informe um CNPJ válido.</span>
+                                    <p class="form-help">Ao preencher o CNPJ, buscaremos os dados públicos da instituição na BrasilAPI.</p>
+                                </div>
+
+                                <div class="input-group full">
+                                    <label for="ong-razao-social">Razão social oficial</label>
+                                    <input type="text" id="ong-razao-social" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-nome-fantasia">Nome fantasia oficial</label>
+                                    <input type="text" id="ong-nome-fantasia" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-situacao">Situação cadastral</label>
+                                    <input type="text" id="ong-situacao" disabled>
+                                </div>
+
+                                <div class="input-group full">
+                                    <label for="ong-nome-publico">Nome público no site</label>
+                                    <input type="text" id="ong-nome-publico" placeholder="Nome que aparecerá para os doadores">
+                                    <span class="erro-campo" id="erro-ong-nome-publico">Informe o nome público da instituição.</span>
+                                </div>
+                            </div>
+
+                            <div class="btns-ong">
+                                <a href="perfil.html" class="btn-ong-secondary btn-link-ong">Cancelar</a>
+                                <button type="button" class="btn-ong-primary" id="btn-ong-next-1">Continuar</button>
+                            </div>
+                        </section>
+
+                        <section class="form-etapa-ong" id="ong-etapa-2">
+                            <div class="form-grid">
+                                <div class="input-group">
+                                    <label for="ong-cep">CEP</label>
+                                    <input type="text" id="ong-cep" placeholder="00000-000" inputmode="numeric">
+                                    <span class="erro-campo" id="erro-ong-cep">Informe um CEP válido.</span>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-numero">Número</label>
+                                    <input type="text" id="ong-numero" placeholder="123">
+                                    <span class="erro-campo" id="erro-ong-numero">Informe o número.</span>
+                                </div>
+
+                                <div class="input-group full">
+                                    <label for="ong-rua">Rua</label>
+                                    <input type="text" id="ong-rua" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-bairro">Bairro</label>
+                                    <input type="text" id="ong-bairro" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-cidade">Cidade</label>
+                                    <input type="text" id="ong-cidade" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-estado">Estado</label>
+                                    <input type="text" id="ong-estado" disabled>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-complemento">Complemento</label>
+                                    <input type="text" id="ong-complemento" placeholder="Sala, bloco, ponto de referência...">
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn-ong-secondary btn-corrigir-endereco" id="btn-corrigir-endereco">Corrigir endereço</button>
+
+                            <div class="btns-ong">
+                                <button type="button" class="btn-ong-secondary" id="btn-ong-back-2">Voltar</button>
+                                <button type="button" class="btn-ong-primary" id="btn-ong-next-2">Continuar</button>
+                            </div>
+                        </section>
+
+                        <section class="form-etapa-ong" id="ong-etapa-3">
+                            <div class="form-grid">
+                                <div class="input-group full">
+                                    <label for="ong-descricao">Descrição da instituição</label>
+                                    <textarea id="ong-descricao" maxlength="360" placeholder="Explique a atuação da instituição, público atendido e tipos de doações que fazem sentido."></textarea>
+                                    <span class="erro-campo" id="erro-ong-descricao">A descrição deve ter pelo menos 20 caracteres.</span>
+                                    <p class="form-help"><span id="contador-descricao-ong">0</span>/360</p>
+                                </div>
+
+                                <div class="input-group full">
+                                    <label>Categorias aceitas</label>
+                                    <div class="categorias-opcoes">
+                                        <label class="categoria-check"><input type="checkbox" value="alimentos"><span class="categoria-icone-mini">🍎</span><span class="categoria-texto">Alimentos</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="roupas"><span class="categoria-icone-mini">👕</span><span class="categoria-texto">Roupas</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="higiene"><span class="categoria-icone-mini">🧴</span><span class="categoria-texto">Higiene e limpeza</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="educacao"><span class="categoria-icone-mini">📚</span><span class="categoria-texto">Educação</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="brinquedos"><span class="categoria-icone-mini">🧸</span><span class="categoria-texto">Brinquedos</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="pets"><span class="categoria-icone-mini">🐾</span><span class="categoria-texto">Pets</span></label>
+                                        <label class="categoria-check"><input type="checkbox" value="moveis"><span class="categoria-icone-mini">🪑</span><span class="categoria-texto">Móveis e utensílios</span></label>
+                                    </div>
+                                    <span class="erro-campo" id="erro-ong-categorias">Selecione pelo menos uma categoria.</span>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-tipo-chave-pix">Tipo da chave Pix</label>
+                                    <select id="ong-tipo-chave-pix" required>
+                                        <option value="">Selecione</option>
+                                        <option value="cpf">CPF</option>
+                                        <option value="cnpj">CNPJ</option>
+                                        <option value="email">E-mail</option>
+                                        <option value="telefone">Telefone</option>
+                                        <option value="aleatoria">Aleatória</option>
+                                    </select>
+                                    <span class="erro-campo" id="erro-ong-tipo-chave-pix">Selecione o tipo da chave Pix.</span>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="ong-chave-pix">Chave Pix</label>
+                                    <input type="text" id="ong-chave-pix" placeholder="Digite a chave Pix" required>
+                                    <span class="erro-campo" id="erro-ong-chave-pix">Informe a chave Pix.</span>
+                                    <p class="form-help">Não será exibida publicamente nesta fase.</p>
+                                </div>
+                            </div>
+
+                            <div class="analise-box">
+                                Ao enviar, a instituição ficará com status pendente. Ela só aparecerá nos cards públicos depois de ser aprovada.
+                            </div>
+
+                            <div class="btns-ong">
+                                <button type="button" class="btn-ong-secondary" id="btn-ong-back-3">Voltar</button>
+                                <button type="submit" class="btn-ong-primary" id="btn-enviar-instituicao">Enviar para análise</button>
+                            </div>
+                        </section>
+                    </form>
+                </div>
+            </section>
+            <a href="perfil.html" class="link-voltar-ong">← Voltar para o perfil</a>
+        </div>
+    </main>
+
+    <div id="pop-up-sucesso" class="pop-up">✓ Instituição enviada para análise!</div>
+
+    <div class="modal-ong-overlay" id="modal-cancelar-solicitacao" aria-hidden="true">
+        <div class="modal-ong" role="dialog" aria-modal="true" aria-labelledby="modal-cancelar-titulo">
+            <h3 id="modal-cancelar-titulo">Cancelar solicitação?</h3>
+            <p>Ao cancelar, este pedido será removido da análise. Você poderá enviar um novo cadastro depois, se precisar.</p>
+            <div class="modal-ong-botoes">
+                <button type="button" class="modal-ong-cancelar" id="btn-fechar-cancelamento">Voltar</button>
+                <button type="button" class="modal-ong-confirmar" id="btn-confirmar-cancelamento">Cancelar envio</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/instituicoes.js"></script>
+</body>
+</html>

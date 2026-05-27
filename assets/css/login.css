@@ -1,0 +1,237 @@
+﻿body { background: #FAFAFA; }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 40px;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,1);
+            border-radius: 24px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+        }
+
+        .login-logo {
+            height: 38px;
+            width: 48px;
+            background-color: var(--red-base);
+            -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center left;
+            mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center left;
+            margin-bottom: 20px;
+        }
+
+        .login-titulo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 6px;
+        }
+
+        .login-subtitulo {
+            font-size: 0.88rem;
+            color: var(--gray-text);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        /* toast de erro */
+        .toast-erro {
+            display: none;
+            background: #fff3f3;
+            border: 1.5px solid #E53935;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #c62828;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .toast-erro.visivel { display: block; }
+
+        /* inputs */
+        .input-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .input-group label,
+        .input-label-row label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .input-group input {
+            padding: 12px 14px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            background: rgba(255,255,255,0.8);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--red-base);
+            box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+        }
+
+        .input-group input.erro {
+            border-color: #E53935;
+        }
+
+        /* badge que mostra o tipo detectado (CPF ou Email) */
+        .tipo-badge {
+            display: none;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(229,57,53,0.1);
+            color: var(--red-base);
+        }
+
+        .tipo-badge.visivel { display: inline-block; }
+
+        /* botão de entrar */
+        .btn-entrar {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: var(--red-base);
+            color: white;
+            margin-top: 4px;
+        }
+
+        .btn-entrar:hover {
+            background: var(--red-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--theme-shadow);
+        }
+
+        .btn-entrar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* divisor social */
+        .divisor-social {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+
+        .divisor-social span {
+            font-size: 0.8rem;
+            color: #bbb;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .divisor-social::before,
+        .divisor-social::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e8e8e8;
+        }
+
+        .btns-sociais {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-social:hover {
+            border-color: #bbb;
+            background: #fafafa;
+            transform: translateY(-1px);
+        }
+
+        .link-cadastro {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray-text);
+            margin-top: 20px;
+        }
+
+        .link-cadastro a {
+            color: var(--red-base);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .link-cadastro a:hover { text-decoration: underline; }
+
+        .link-voltar {
+            display: block;
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--gray-text);
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .link-voltar:hover { color: var(--red-base); }
+
+        .spinner-btn {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+

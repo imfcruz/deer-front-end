@@ -1,0 +1,398 @@
+﻿body { background: #FAFAFA; }
+
+        .cadastro-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 40px;
+        }
+
+        /* card principal */
+        .cadastro-card {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,1);
+            border-radius: 24px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 460px;
+            overflow: hidden;
+        }
+
+        /* topo do card com logo e título */
+        .cadastro-topo {
+            padding: 36px 40px 0;
+        }
+
+        .cadastro-logo {
+            height: 38px;
+            width: 48px;
+            background-color: var(--red-base);
+            -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center left;
+            mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center left;
+            margin-bottom: 20px;
+        }
+
+        .cadastro-titulo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .cadastro-subtitulo {
+            font-size: 0.88rem;
+            color: var(--gray-text);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        /* barra de progresso */
+        .progress-bar-wrapper {
+            padding: 0 40px;
+            margin-bottom: 28px;
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e0e0e0;
+            transition: background 0.4s ease;
+            z-index: 0;
+        }
+
+        .progress-step.concluido:not(:last-child)::after {
+            background: var(--red-base);
+        }
+
+        .step-circulo {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #bbb;
+            transition: all 0.4s ease;
+            z-index: 1;
+            position: relative;
+        }
+
+        .progress-step.ativo .step-circulo {
+            border-color: var(--red-base);
+            background: var(--red-base);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(229,57,53,0.15);
+        }
+
+        .progress-step.concluido .step-circulo {
+            border-color: var(--red-base);
+            background: var(--red-base);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #bbb;
+            text-align: center;
+            transition: color 0.3s;
+            white-space: nowrap;
+        }
+
+        .progress-step.ativo .step-label,
+        .progress-step.concluido .step-label {
+            color: var(--red-base);
+        }
+
+        /* área dos formulários com slide */
+        .cadastro-forms {
+            overflow: hidden;
+        }
+
+        .form-slider {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 300%;
+        }
+
+        .form-etapa {
+            width: 33.333%;
+            flex-shrink: 0;
+            padding: 0 40px 36px;
+            box-sizing: border-box;
+        }
+
+        /* inputs */
+        .input-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            padding: 12px 14px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            background: rgba(255,255,255,0.8);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--red-base);
+            box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+        }
+
+        .input-group input.erro {
+            border-color: #E53935;
+        }
+
+        .input-group input:disabled {
+            background: #f5f5f5;
+            color: var(--gray-text);
+            cursor: default;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .input-group { flex: 1; min-width: 0; }
+        .form-row .input-group input { width: 100%; min-width: 0; box-sizing: border-box; }
+        .campo-curto { max-width: 80px; }
+
+        /* mensagem de erro inline */
+        .msg-erro {
+            display: none;
+            font-size: 0.78rem;
+            color: #E53935;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .msg-erro.visivel { display: block; }
+
+        /* campos de endereço que aparecem após CEP */
+        .campos-endereco {
+            display: none;
+        }
+
+        .campos-endereco.visivel {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* link corrigir endereço */
+        .link-corrigir {
+            font-size: 0.78rem;
+            color: var(--red-base);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .link-corrigir:hover { text-decoration: underline; }
+
+        /* botões de navegação */
+        .btn-proximo, .btn-voltar {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-proximo {
+            background: var(--red-base);
+            color: white;
+            margin-top: 8px;
+        }
+
+        .btn-proximo:hover {
+            background: var(--red-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--theme-shadow);
+        }
+
+        .btn-proximo:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-voltar {
+            background: transparent;
+            color: var(--gray-text);
+            border: 1.5px solid #e0e0e0;
+            margin-top: 8px;
+        }
+
+        .btn-voltar:hover {
+            background: #f5f5f5;
+        }
+
+        .btns-navegacao {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        /* botões sociais */
+        .divisor-social {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+
+        .divisor-social span {
+            font-size: 0.8rem;
+            color: #bbb;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .divisor-social::before,
+        .divisor-social::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e8e8e8;
+        }
+
+        .btns-sociais {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+
+        .btn-social:hover {
+            border-color: #bbb;
+            background: #fafafa;
+            transform: translateY(-1px);
+        }
+
+        /* link login */
+        .link-login {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray-text);
+            margin-top: 18px;
+        }
+
+        .link-login a {
+            color: var(--red-base);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .link-login a:hover { text-decoration: underline; }
+
+        /* loading no botão */
+        .btn-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner-btn {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* toast de erro */
+        .toast-erro {
+            display: none;
+            background: #fff3f3;
+            border: 1.5px solid #E53935;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #c62828;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .toast-erro.visivel { display: block; }
+
