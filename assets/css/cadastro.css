@@ -29,16 +29,26 @@
         .cadastro-logo {
             height: 38px;
             width: 48px;
-            background-color: var(--red-base);
-            -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-            -webkit-mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: center left;
-            mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-            mask-size: contain;
-            mask-repeat: no-repeat;
-            mask-position: center left;
+            background-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center left;
             margin-bottom: 20px;
+        }
+
+        @supports ((-webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png')) or (mask-image: url('../img/logo-deer-recortada-sem-fundo.png'))) {
+            .cadastro-logo {
+                background-color: var(--red-base);
+                background-image: none;
+                -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+                -webkit-mask-size: contain;
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-position: center left;
+                mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+                mask-size: contain;
+                mask-repeat: no-repeat;
+                mask-position: center left;
+            }
         }
 
         .cadastro-titulo {
@@ -395,4 +405,54 @@
         }
 
         .toast-erro.visivel { display: block; }
+
+        @media (max-width: 560px) {
+            .cadastro-page {
+                align-items: flex-start;
+                padding: 96px 14px 32px;
+            }
+
+            .cadastro-card {
+                border-radius: 18px;
+            }
+
+            .cadastro-topo,
+            .progress-bar-wrapper {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .cadastro-topo {
+                padding-top: 26px;
+            }
+
+            .cadastro-titulo {
+                font-size: 1.45rem;
+            }
+
+            .form-etapa {
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-bottom: 26px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .campo-curto {
+                max-width: none;
+            }
+
+            .step-label {
+                font-size: 0.62rem;
+            }
+
+            .btn-proximo,
+            .btn-voltar {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
 

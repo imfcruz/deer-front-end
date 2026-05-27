@@ -68,27 +68,31 @@ body {
     align-items: center;
 }
 
-/* isso é uma mascara css, serve pra colorir a logo de acordo com o tema do usuario */
+/* A logo usa imagem normal como fallback e máscara colorida quando o navegador suporta. */
 .logo-mask {
     height: 65px;
     width: 80px; /* largura aproximada para a mascara não cortar a logo */
-    
-    /* a cor da logo é a mesma do tema, aqui muda dinamico  */
-    background-color: var(--red-base); 
-    
-    /* usa o png como margem de corte */
-    -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center left;
-    
-    mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center left;
-    
+    background-image: url('../img/logo-deer-recortada-sem-fundo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center left;
     transition: background-color 0.3s ease, transform 0.3s ease;
     cursor: pointer;
+}
+
+@supports ((-webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png')) or (mask-image: url('../img/logo-deer-recortada-sem-fundo.png'))) {
+    .logo-mask {
+        background-color: var(--red-base);
+        background-image: none;
+        -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center left;
+        mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-position: center left;
+    }
 }
 
 .logo-mask:hover { 
@@ -1018,4 +1022,165 @@ html[data-theme="escuro"] .btn-cancelar {
 
 html[data-theme="escuro"] .footer {
     background: #0B0D0F;
+}
+
+@media (max-width: 900px) {
+    .header {
+        height: auto;
+        min-height: 70px;
+    }
+
+    .header-container {
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
+    .logo-mask {
+        width: 64px;
+        height: 52px;
+    }
+
+    .usuario {
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .usuario-identidade {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .login-trigger,
+    .signup-trigger,
+    .usuario-acao {
+        padding: 7px 12px;
+        font-size: 0.78rem;
+    }
+
+    .tela-inicial {
+        padding: 118px 16px 34px;
+    }
+
+    .titulo {
+        font-size: 2.35rem;
+    }
+
+    .texto-intodutorio {
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+
+    .secao-container {
+        padding: 56px 16px;
+    }
+
+    .secao-titulo {
+        font-size: 1.75rem;
+    }
+
+    .secao-subtitulo {
+        margin-bottom: 30px;
+    }
+
+    .passos {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .passo {
+        max-width: none;
+        width: 100%;
+        padding: 24px 18px;
+    }
+
+    .passo-seta {
+        transform: rotate(90deg);
+        line-height: 1;
+    }
+
+    .categorias-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .categoria-card {
+        padding: 18px 10px;
+        border-radius: 12px;
+    }
+
+    .beneficios-grid,
+    .ongs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        gap: 26px;
+    }
+}
+
+@media (max-width: 520px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .header-container {
+        align-items: flex-start;
+    }
+
+    .usuario {
+        max-width: calc(100vw - 96px);
+    }
+
+    .usuario-saudacao {
+        display: none;
+    }
+
+    .botoes-da-tela-inicial {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .doar,
+    .conhecer-ongs {
+        width: 100%;
+        padding: 12px 18px;
+        font-size: 0.92rem;
+    }
+
+    .motto {
+        font-size: 0.76rem;
+        letter-spacing: 1.2px;
+    }
+
+    .titulo {
+        font-size: 1.9rem;
+    }
+
+    .categorias-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ongs-page {
+        padding: 104px 14px 42px;
+    }
+
+    .ongs-hero h1 {
+        font-size: 1.75rem;
+    }
+
+    .filtros-ongs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 8px;
+    }
+
+    .filtro-ong {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+    }
 }

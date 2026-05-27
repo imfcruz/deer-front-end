@@ -23,16 +23,26 @@
         .login-logo {
             height: 38px;
             width: 48px;
-            background-color: var(--red-base);
-            -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-            -webkit-mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: center left;
-            mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
-            mask-size: contain;
-            mask-repeat: no-repeat;
-            mask-position: center left;
+            background-image: url('../img/logo-deer-recortada-sem-fundo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center left;
             margin-bottom: 20px;
+        }
+
+        @supports ((-webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png')) or (mask-image: url('../img/logo-deer-recortada-sem-fundo.png'))) {
+            .login-logo {
+                background-color: var(--red-base);
+                background-image: none;
+                -webkit-mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+                -webkit-mask-size: contain;
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-position: center left;
+                mask-image: url('../img/logo-deer-recortada-sem-fundo.png');
+                mask-size: contain;
+                mask-repeat: no-repeat;
+                mask-position: center left;
+            }
         }
 
         .login-titulo {
@@ -234,4 +244,24 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 520px) {
+            .login-page {
+                align-items: flex-start;
+                padding: 96px 14px 32px;
+            }
+
+            .login-card {
+                padding: 26px 18px;
+                border-radius: 18px;
+            }
+
+            .login-titulo {
+                font-size: 1.45rem;
+            }
+
+            .btns-sociais {
+                gap: 8px;
+            }
+        }
 

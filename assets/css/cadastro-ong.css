@@ -531,6 +531,14 @@
         }
 
         @media (max-width: 720px) {
+            .instituicao-page {
+                padding: 96px 12px 36px;
+            }
+
+            .instituicao-card {
+                border-radius: 14px;
+            }
+
             .instituicao-topo,
             .progress-ong,
             .instituicao-form-area {
@@ -556,6 +564,35 @@
 
             .solicitacao-actions {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .instituicao-page {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .instituicao-card {
+                border-left: none;
+                border-right: none;
+                border-radius: 0;
+            }
+
+            .instituicao-topo h1 {
+                font-size: 1.45rem;
+            }
+
+            .progress-ong-step {
+                font-size: 0.78rem;
+            }
+
+            .categorias-opcoes {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-ong-botoes {
+                flex-direction: column;
             }
         }
 

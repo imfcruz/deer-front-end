@@ -655,3 +655,63 @@
             color: var(--dark-text);
         }
 
+        @media (max-width: 560px) {
+            .perfil-container {
+                align-items: flex-start;
+                padding: 18px 0 28px;
+            }
+
+            .perfil-card {
+                width: 100%;
+                max-width: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .perfil-header {
+                padding: 54px 18px 24px;
+            }
+
+            .btn-editar-banner {
+                top: 10px;
+                right: 10px;
+                font-size: 0.7rem;
+                padding: 5px 8px;
+            }
+
+            .banner-color-panel {
+                right: 8px;
+                width: min(220px, calc(100vw - 16px));
+            }
+
+            .perfil-body {
+                padding: 22px 18px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .perfil-campo-curto {
+                max-width: none;
+            }
+
+            .tema-opcoes,
+            .endereco-actions,
+            .modal-botoes {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .btn-secundario,
+            .btn-salvar,
+            .btn-excluir {
+                width: 100%;
+            }
+
+            .modal-confirmacao {
+                padding: 24px 18px;
+            }
+        }
+
