@@ -156,6 +156,16 @@
             margin-top: 5px;
         }
 
+        .form-help.consultando {
+            color: #D56F00;
+            font-weight: 700;
+        }
+
+        .form-help.sucesso {
+            color: #2E7D32;
+            font-weight: 700;
+        }
+
         .erro-campo {
             display: none;
             color: #c62828;
@@ -213,6 +223,12 @@
             background: rgba(229,57,53,0.10);
             font-size: 0.9rem;
             flex: 0 0 auto;
+        }
+
+        .categoria-icone-mini img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
         }
 
         .categoria-texto {
@@ -406,6 +422,15 @@
             color: var(--red-base);
             font-size: 0.78rem;
             font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .solicitacao-categorias .categoria-chip-icone {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
 
         .btn-ong-danger {

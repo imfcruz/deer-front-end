@@ -436,8 +436,15 @@ body {
 }
 
 .categoria-icone {
-    font-size: 2rem;
     margin-bottom: 10px;
+}
+
+.categoria-icone img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
 }
 
 .categoria-card span {
@@ -591,6 +598,15 @@ body {
     color: var(--red-base);
     font-size: 0.7rem;
     font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.categoria-chip-icone {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
 }
 
 .btn-card-contribuir {
@@ -839,7 +855,16 @@ body {
     font-family: inherit;
     font-weight: 800;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.filtro-ong img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 .filtro-ong:hover,
@@ -998,6 +1023,13 @@ html[data-theme="escuro"] .valor {
     background: var(--surface-strong);
     border-color: var(--border-color);
     box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+}
+
+html[data-theme="escuro"] .categoria-card:hover {
+    border-color: var(--red-base);
+    background: var(--surface-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(229,57,53,0.22);
 }
 
 html[data-theme="escuro"] input,

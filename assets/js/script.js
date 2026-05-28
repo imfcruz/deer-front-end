@@ -274,14 +274,24 @@ window.sair = () => {
 };
 
 const categoriasDoacao = {
-    alimentos: { nome: 'Alimentos', icone: '🍎' },
-    roupas: { nome: 'Roupas', icone: '👕' },
-    higiene: { nome: 'Higiene e limpeza', icone: '🧴' },
-    educacao: { nome: 'Educação', icone: '📚' },
-    brinquedos: { nome: 'Brinquedos', icone: '🧸' },
-    pets: { nome: 'Pets', icone: '🐾' },
-    moveis: { nome: 'Móveis e utensílios', icone: '🪑' }
+    alimentos: { nome: 'Alimentos', icone: 'diet.png' },
+    roupas: { nome: 'Roupas', icone: 'clothes.png' },
+    higiene: { nome: 'Higiene e limpeza', icone: 'tissue-roll.png' },
+    educacao: { nome: 'Educação', icone: 'stack-of-books.png' },
+    brinquedos: { nome: 'Brinquedos', icone: 'donate.png' },
+    pets: { nome: 'Pets', icone: 'pets.png' },
+    moveis: { nome: 'Móveis e utensílios', icone: 'dining.png' }
 };
+
+function caminhoIconeCategoria(arquivo) {
+    const base = window.location.pathname.includes('/pages/') ? '../assets/img/' : 'assets/img/';
+    return `${base}${arquivo}`;
+}
+
+function iconeCategoriaHtml(meta) {
+    if (!meta || !meta.icone) return '';
+    return `<img class="categoria-chip-icone" src="${caminhoIconeCategoria(meta.icone)}" alt="">`;
+}
 
 // Monta o caminho certo quando o clique vem da home ou de uma página dentro de /pages.
 function caminhoPaginaOngs(categoria = '') {
@@ -339,7 +349,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
                         ${categorias.length
                             ? categorias.slice(0, 4).map(categoria => {
                                 const meta = categoriasDoacao[categoria];
-                                return `<span>${meta ? `${meta.icone} ${meta.nome}` : textoSeguro(categoria)}</span>`;
+                                return `<span>${meta ? `${iconeCategoriaHtml(meta)}${textoSeguro(meta.nome)}` : textoSeguro(categoria)}</span>`;
                             }).join('')
                             : '<span>Categorias em análise</span>'}
                     </div>

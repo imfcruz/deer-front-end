@@ -1,11 +1,11 @@
 const categoriasInstituicao = {
-    alimentos: '🍎 Alimentos',
-    roupas: '👕 Roupas',
-    higiene: '🧴 Higiene e limpeza',
-    educacao: '📚 Educação',
-    brinquedos: '🧸 Brinquedos',
-    pets: '🐾 Pets',
-    moveis: '🪑 Móveis e utensílios'
+    alimentos: { nome: 'Alimentos', icone: 'diet.png' },
+    roupas: { nome: 'Roupas', icone: 'clothes.png' },
+    higiene: { nome: 'Higiene e limpeza', icone: 'tissue-roll.png' },
+    educacao: { nome: 'Educação', icone: 'stack-of-books.png' },
+    brinquedos: { nome: 'Brinquedos', icone: 'donate.png' },
+    pets: { nome: 'Pets', icone: 'pets.png' },
+    moveis: { nome: 'Móveis e utensílios', icone: 'dining.png' }
 };
 
 const tiposPix = {
@@ -52,10 +52,21 @@ function formatarTelefone(valor = '') {
 }
 
 function normalizarChaveAleatoria(valor = '') {
-    return String(valor)
+    const v = String(valor)
         .toLowerCase()
         .replace(/[^0-9a-f-]/g, '')
-        .slice(0, 36);
+        .replace(/-/g, '')
+        .slice(0, 32);
+
+    const partes = [
+        v.slice(0, 8),
+        v.slice(8, 12),
+        v.slice(12, 16),
+        v.slice(16, 20),
+        v.slice(20, 32)
+    ].filter(Boolean);
+
+    return partes.join('-');
 }
 
 function validarChavePix(tipo, chave) {
@@ -85,6 +96,12 @@ function textoSeguro(valor = '') {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+function categoriaInstituicaoHtml(categoria) {
+    const meta = categoriasInstituicao[categoria];
+    if (!meta) return textoSeguro(categoria);
+    return `<img class="categoria-chip-icone" src="../assets/img/${meta.icone}" alt="">${textoSeguro(meta.nome)}`;
 }
 
 function aplicarMascaraCNPJ(input) {
@@ -118,6 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let etapaAtual = 1;
     let cnpjConsultado = false;
+    let cnpjEmConsulta = false;
+    let ultimoCnpjConsultado = '';
+    let promessaConsultaCnpj = null;
+    let timerConsultaCnpj = null;
     let enderecoConsultado = false;
     let enderecoLiberado = false;
     let cepExtraidoCNPJ = '';
@@ -141,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const toast = document.getElementById('toast-ong');
+    const ajudaCnpj = document.getElementById('ong-cnpj-ajuda');
     const btnEnviar = document.getElementById('btn-enviar-instituicao');
     const modalCancelamento = document.getElementById('modal-cancelar-solicitacao');
     const btnFecharCancelamento = document.getElementById('btn-fechar-cancelamento');
@@ -172,6 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const cepAtual = limparNumero(campos.cep.value);
         if (!cepExtraidoCNPJ || !cepAtual || cepAtual === cepExtraidoCNPJ) return '';
         return `O endereço foi corrigido durante o cadastro. CEP retornado pela consulta do CNPJ: ${cepExtraidoCNPJ.replace(/^(\d{5})(\d{3})$/, '$1-$2')}. CEP informado no formulário: ${campos.cep.value}.`;
+    }
+
+    function atualizarAjudaCnpj(texto, estado = '') {
+        if (!ajudaCnpj) return;
+        ajudaCnpj.textContent = texto;
+        ajudaCnpj.classList.remove('consultando', 'sucesso');
+        if (estado) ajudaCnpj.classList.add(estado);
     }
 
     // Cada tipo de chave Pix muda placeholder, limite e máscara do campo seguinte.
@@ -319,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>Categorias aceitas</span>
                             <div class="solicitacao-categorias">
                                 ${categorias.length
-                                    ? categorias.map(categoria => `<span>${textoSeguro(categoriasInstituicao[categoria] || categoria)}</span>`).join('')
+                                    ? categorias.map(categoria => `<span>${categoriaInstituicaoHtml(categoria)}</span>`).join('')
                                     : '<span>Nenhuma categoria informada</span>'}
                             </div>
                         </div>
@@ -402,21 +431,28 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarSolicitacaoExistente();
 
     // Consulta dados públicos do CNPJ na BrasilAPI para reduzir digitação e evitar dados inventados.
-    async function buscarCNPJ() {
+    async function buscarCNPJ(mostrarErroTamanho = true) {
         const cnpj = limparNumero(campos.cnpj.value);
         cnpjConsultado = false;
         limparErroCampo('erro-ong-cnpj');
 
         if (cnpj.length !== 14) {
-            mostrarErroCampo('erro-ong-cnpj', 'Informe um CNPJ com 14 dígitos.');
-            return;
+            if (mostrarErroTamanho) mostrarErroCampo('erro-ong-cnpj', 'Informe um CNPJ com 14 dígitos.');
+            atualizarAjudaCnpj('Ao preencher o CNPJ, buscaremos os dados públicos da instituição na BrasilAPI.');
+            return false;
         }
 
-        try {
-            campos.razaoSocial.value = 'Buscando...';
+        if (cnpjEmConsulta && promessaConsultaCnpj) return promessaConsultaCnpj.catch(() => false);
+        if (cnpjConsultado && cnpj === ultimoCnpjConsultado) return true;
+
+        cnpjEmConsulta = true;
+        atualizarAjudaCnpj('Consultando CNPJ na BrasilAPI...', 'consultando');
+        promessaConsultaCnpj = (async () => {
             const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
             if (!response.ok) throw new Error('CNPJ não encontrado.');
             const dados = await response.json();
+
+            if (limparNumero(campos.cnpj.value) !== cnpj) return false;
 
             campos.razaoSocial.value = dados.razao_social || '';
             campos.nomeFantasia.value = dados.nome_fantasia || '';
@@ -437,13 +473,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             alternarCamposEndereco(false);
             cnpjConsultado = true;
+            ultimoCnpjConsultado = cnpj;
             if (campos.cep.value && campos.rua.value) enderecoConsultado = true;
+            atualizarAjudaCnpj('CNPJ encontrado. Confira os dados preenchidos automaticamente.', 'sucesso');
+            return true;
+        })();
+
+        try {
+            return await promessaConsultaCnpj;
         } catch {
             campos.razaoSocial.value = '';
             campos.nomeFantasia.value = '';
             campos.situacao.value = '';
             cepExtraidoCNPJ = '';
             mostrarErroCampo('erro-ong-cnpj', 'CNPJ não encontrado. Verifique e tente novamente.');
+            atualizarAjudaCnpj('Não foi possível encontrar esse CNPJ. Verifique os números e tente novamente.');
+            return false;
+        } finally {
+            cnpjEmConsulta = false;
+            promessaConsultaCnpj = null;
         }
     }
 
@@ -528,15 +576,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return ok;
     }
 
-    campos.cnpj.addEventListener('blur', buscarCNPJ);
+    campos.cnpj.addEventListener('blur', () => buscarCNPJ());
     campos.cep.addEventListener('blur', buscarCEPInstituicao);
     campos.cep.addEventListener('input', () => {
         limparErroCampo('erro-ong-cep');
     });
 
     campos.cnpj.addEventListener('input', () => {
+        const cnpj = limparNumero(campos.cnpj.value);
         cnpjConsultado = false;
         limparErroCampo('erro-ong-cnpj');
+        if (cnpj.length < 14) {
+            atualizarAjudaCnpj('Ao preencher o CNPJ, buscaremos os dados públicos da instituição na BrasilAPI.');
+        }
+
+        clearTimeout(timerConsultaCnpj);
+        if (cnpj.length === 14 && cnpj !== ultimoCnpjConsultado && !cnpjEmConsulta) {
+            timerConsultaCnpj = setTimeout(() => buscarCNPJ(false), 250);
+        }
     });
 
     campos.nomePublico.addEventListener('input', () => limparErroCampo('erro-ong-nome-publico'));
@@ -564,7 +621,13 @@ document.addEventListener('DOMContentLoaded', () => {
         alternarCamposEndereco(true);
     });
 
-    document.getElementById('btn-ong-next-1').addEventListener('click', () => {
+    document.getElementById('btn-ong-next-1').addEventListener('click', async () => {
+        if (cnpjEmConsulta && promessaConsultaCnpj) {
+            await promessaConsultaCnpj.catch(() => false);
+        }
+        if (limparNumero(campos.cnpj.value).length === 14 && !cnpjConsultado && !cnpjEmConsulta) {
+            await buscarCNPJ();
+        }
         if (validarEtapa1()) irParaEtapa(2);
     });
 

@@ -26,27 +26,44 @@
             position: relative;
         }
 
+        .perfil-header.banner-claro {
+            color: #18212f;
+        }
+
         /* botão de editar cor do banner */
         .btn-editar-banner {
             position: absolute;
             top: 12px;
             right: 12px;
-            background: rgba(255,255,255,0.2);
-            border: 1.5px solid rgba(255,255,255,0.4);
+            background: var(--banner-btn-bg, rgba(255,255,255,0.2));
+            border: 1.5px solid var(--banner-btn-border, rgba(255,255,255,0.4));
             border-radius: 8px;
-            color: white;
+            color: var(--banner-btn-color, white);
             font-family: 'Poppins', sans-serif;
             font-size: 0.75rem;
             font-weight: 600;
             padding: 5px 10px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
             display: flex;
             align-items: center;
             gap: 5px;
+            box-shadow: var(--banner-btn-shadow, none);
         }
 
-        .btn-editar-banner:hover { background: rgba(255,255,255,0.35); }
+        .btn-editar-banner:hover { background: var(--banner-btn-bg-hover, rgba(255,255,255,0.35)); }
+
+        .perfil-header.banner-claro .btn-editar-banner {
+            background: var(--banner-btn-bg, rgba(255,255,255,0.78));
+            border-color: var(--banner-btn-border, rgba(24,33,47,0.18));
+            color: var(--banner-btn-color, #18212f);
+            box-shadow: var(--banner-btn-shadow, 0 6px 18px rgba(24,33,47,0.12));
+        }
+
+        .perfil-header.banner-claro .btn-editar-banner:hover {
+            background: var(--banner-btn-bg-hover, rgba(255,255,255,0.95));
+            border-color: var(--banner-btn-border-hover, rgba(229,57,53,0.45));
+        }
 
         /* painel do seletor de cor do banner */
         .banner-color-panel {
@@ -107,9 +124,7 @@
 
         /* input hex */
         .hex-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+            display: block;
             margin-bottom: 10px;
         }
 
@@ -122,19 +137,10 @@
             font-size: 0.82rem;
             color: var(--dark-text);
             text-transform: uppercase;
+            width: 100%;
         }
 
         .hex-row input[type="text"]:focus { outline: none; border-color: var(--red-base); }
-
-        .hex-row input[type="color"] {
-            width: 34px;
-            height: 34px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            padding: 0;
-            background: none;
-        }
 
         /* avatar com upload ao clicar */
         .avatar-wrapper {
@@ -149,16 +155,22 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.25);
-            border: 3px solid white;
+            background: var(--banner-avatar-bg, rgba(255,255,255,0.25));
+            border: 3px solid var(--banner-avatar-border, white);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             font-weight: 700;
-            color: white;
+            color: var(--banner-avatar-color, white);
             overflow: hidden;
             transition: filter 0.2s;
+        }
+
+        .perfil-header.banner-claro .perfil-avatar {
+            background: var(--banner-avatar-bg, rgba(24,33,47,0.08));
+            border-color: var(--banner-avatar-border, rgba(24,33,47,0.18));
+            color: var(--banner-avatar-color, #18212f);
         }
 
         .perfil-avatar img {

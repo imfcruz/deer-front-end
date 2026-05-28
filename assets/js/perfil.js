@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // essas variaveis são usadas em varias partes do codigo, então foram definidas aqui
     const inputHex = document.getElementById('input-hex');
-    const inputColorPicker = document.getElementById('input-color-picker');
     const headerEl = document.getElementById('perfil-header');
     const painel = document.getElementById('banner-color-panel');
     const btnEditarBanner = document.getElementById('btn-editar-banner');
@@ -40,11 +39,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function atualizarCorPicker(cor) {
-        inputHex.value = cor.toUpperCase();
-        inputColorPicker.value = cor;
+    function corEhClara(cor) {
+        const hex = cor.replace('#', '');
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        const luminosidade = (r * 299 + g * 587 + b * 114) / 1000;
+        return luminosidade > 180;
+    }
+
+    function aplicarCorBanner(cor) {
+        if (!/^#[0-9A-Fa-f]{6}$/.test(cor)) return;
+        const corNormalizada = cor.toUpperCase();
+        const bannerClaro = corEhClara(corNormalizada);
+        headerEl.style.background = corNormalizada;
+        headerEl.classList.toggle('banner-claro', bannerClaro);
+        headerEl.style.setProperty('--banner-btn-bg', bannerClaro ? 'rgba(255,255,255,0.86)' : 'rgba(255,255,255,0.2)');
+        headerEl.style.setProperty('--banner-btn-bg-hover', bannerClaro ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.35)');
+        headerEl.style.setProperty('--banner-btn-border', bannerClaro ? 'rgba(24,33,47,0.22)' : 'rgba(255,255,255,0.4)');
+        headerEl.style.setProperty('--banner-btn-border-hover', bannerClaro ? 'rgba(229,57,53,0.45)' : 'rgba(255,255,255,0.55)');
+        headerEl.style.setProperty('--banner-btn-color', bannerClaro ? '#18212f' : '#ffffff');
+        headerEl.style.setProperty('--banner-btn-shadow', bannerClaro ? '0 6px 18px rgba(24,33,47,0.14)' : 'none');
+        headerEl.style.setProperty('--banner-avatar-bg', bannerClaro ? 'rgba(24,33,47,0.08)' : 'rgba(255,255,255,0.25)');
+        headerEl.style.setProperty('--banner-avatar-border', bannerClaro ? 'rgba(24,33,47,0.2)' : '#ffffff');
+        headerEl.style.setProperty('--banner-avatar-color', bannerClaro ? '#18212f' : '#ffffff');
+        inputHex.value = corNormalizada;
         document.querySelectorAll('.cor-rapida').forEach(btn => {
-            btn.classList.toggle('selecionada', btn.dataset.cor.toLowerCase() === cor.toLowerCase());
+            btn.classList.toggle('selecionada', btn.dataset.cor.toUpperCase() === corNormalizada);
         });
     }
 
@@ -73,8 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // banner
         if (usuario.banner_cor) {
-            headerEl.style.background = usuario.banner_cor;
-            atualizarCorPicker(usuario.banner_cor);
+            aplicarCorBanner(usuario.banner_cor);
         }
 
         document.getElementById('header-nome').textContent = usuario.nome;
@@ -317,19 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    inputColorPicker.addEventListener('input', () => {
-        const cor = inputColorPicker.value;
-        inputHex.value = cor.toUpperCase();
-        headerEl.style.background = cor;
-        document.querySelectorAll('.cor-rapida').forEach(b => b.classList.toggle('selecionada', b.dataset.cor.toUpperCase() === cor.toUpperCase()));
-    });
-
     inputHex.addEventListener('input', () => {
         const val = inputHex.value.trim();
         if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-            inputColorPicker.value = val;
-            headerEl.style.background = val;
-            document.querySelectorAll('.cor-rapida').forEach(b => b.classList.toggle('selecionada', b.dataset.cor.toUpperCase() === val.toUpperCase()));
+            aplicarCorBanner(val);
         }
     });
 
@@ -337,12 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = (e) => {
             e.stopPropagation();
             const cor = btn.dataset.cor;
-            inputHex.value = cor.toUpperCase();
-            inputColorPicker.value = cor;
-            headerEl.style.background = cor;
-            
-            document.querySelectorAll('.cor-rapida').forEach(b => b.classList.remove('selecionada'));
-            btn.classList.add('selecionada');
+            aplicarCorBanner(cor);
         };
     });
 
