@@ -51,6 +51,13 @@
             box-shadow: var(--banner-btn-shadow, none);
         }
 
+        .btn-editar-banner img {
+            width: 15px;
+            height: 15px;
+            object-fit: contain;
+            flex: 0 0 auto;
+        }
+
         .btn-editar-banner:hover { background: var(--banner-btn-bg-hover, rgba(255,255,255,0.35)); }
 
         .perfil-header.banner-claro .btn-editar-banner {

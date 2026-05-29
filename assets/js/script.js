@@ -326,7 +326,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
     const lista = limite ? instituicoes.slice(0, limite) : instituicoes;
 
     if (!lista.length) {
-        container.innerHTML = '<div class="estado-lista">Nenhuma instituição aprovada encontrada para este filtro.</div>';
+        container.innerHTML = '<div class="estado-lista">Parece que essa categoria está vazia...</div>';
         return;
     }
 
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.innerHTML = `
                 <div class="modal-desenvolvimento" role="dialog" aria-modal="true" aria-labelledby="modal-dev-titulo">
                     <h3 id="modal-dev-titulo">Recurso em desenvolvimento</h3>
-                    <p>O fluxo de doação ainda está sendo construído. Em breve você poderá contribuir diretamente pela plataforma.</p>
+                    <p>O fluxo de doação ainda está sendo trabalhado. Em breve você poderá contribuir diretamente pela plataforma.</p>
                     <button type="button" class="btn-fechar-modal-dev">Entendi</button>
                 </div>
             `;

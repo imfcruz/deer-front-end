@@ -343,7 +343,7 @@ body {
 
 .passos {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
@@ -361,6 +361,10 @@ body {
     text-align: center;
     flex: 1;
     min-width: 200px;
+    min-height: 255px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     
     /* sombra bem minimalista e moderna*/
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
@@ -398,6 +402,9 @@ body {
     color: var(--red-base); /* dinamico */
     font-weight: 700;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* parte de categorias de doação */
@@ -473,6 +480,10 @@ body {
 
 .beneficio-card {
     padding: 22px;
+    min-height: 225px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
 }
 
@@ -492,6 +503,12 @@ body {
     background: rgba(229,57,53,0.10);
     margin-bottom: 14px;
     font-size: 1.25rem;
+}
+
+.beneficio-icone img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .beneficio-card h3 {
