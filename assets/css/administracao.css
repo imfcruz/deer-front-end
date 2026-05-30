@@ -1,0 +1,26 @@
+/* Força o header a ter fundo branco sólido apenas nesta página */
+.header-admin {
+    background-color: var(--white) !important;
+}
+
+/* Fundo com o gradiente laranja suave descendo para o branco */
+.admin-main {
+    background-color: rgb(250, 250, 250);
+    background-image: linear-gradient(rgba(214, 91, 33, 0.2) 0%, rgb(250, 250, 250) 50%);
+    min-height: 100vh;
+}
+
+/* Container que empurra a tabela para baixo (evitando o header) e centraliza */
+.admin-table-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 120px; 
+}
+
+/* Tamanho e borda da tabela */
+.admin-table {
+    width: 80%;
+    max-width: 800px;
+    border: 10px solid var(--border-color); 
+}
+
