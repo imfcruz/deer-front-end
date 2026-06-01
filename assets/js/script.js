@@ -350,7 +350,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
                             ? categorias.slice(0, 4).map(categoria => {
                                 const meta = categoriasDoacao[categoria];
                                 return `<span>${meta ? `${iconeCategoriaHtml(meta)}${textoSeguro(meta.nome)}` : textoSeguro(categoria)}</span>`;
-                            }).join('')
+                            }).join('') + (categorias.length > 4 ? `<span style="background: var(--surface-strong); font-weight: 600;">+${categorias.length - 4}</span>` : '')
                             : '<span>Categorias em análise</span>'}
                     </div>
                     <button type="button" class="btn-card-contribuir" data-recurso-desenvolvimento>Contribuir</button>
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const aplicarFiltro = (categoria) => {
                 categoriaAtual = categoria;
                 const filtradas = categoria
-                    ? instituicoes.filter(instituicao => Array.isArray(instituicao.categorias_aceitas) && instituicao.categorias_aceitas.includes(categoria))
+                    ? instituicoes.filter(instituicao => { return Array.isArray(instituicao.categorias_aceitas) && instituicao.categorias_aceitas.includes(categoria)})
                     : instituicoes;
 
                 document.querySelectorAll('.filtro-ong').forEach(btn => {
@@ -475,6 +475,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.filtro-ong').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const categoria = btn.dataset.categoria || '';
+                    
+                    if (categoriaAtual === categoria) {
+                    categoria = ''; 
+                    }
                     const url = categoria ? `ongs.html?categoria=${encodeURIComponent(categoria)}` : 'ongs.html';
                     window.history.replaceState({}, '', url);
                     aplicarFiltro(categoria);
