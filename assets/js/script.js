@@ -200,7 +200,13 @@ if (formLogin) {
 
             if (response.ok) {
                 sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
-                window.location.href = "../index.html";
+                const estaNaSubpasta = window.location.pathname.includes('/pages/');
+
+                if (resultado.usuario.tipo === 'administrador') {
+                    window.location.href = estaNaSubpasta ? "administracao.html" : "pages/administracao.html";
+                } else {
+                    window.location.href = estaNaSubpasta ? "../index.html" : "index.html";
+                }
             } else {
                 const toast = document.getElementById('pop-up-erro');
                 if (toast) toast.classList.add("show");
@@ -236,6 +242,15 @@ document.addEventListener('DOMContentLoaded', () => {
             miniaturaHtml = `<div class="usuario-iniciais">${iniciais}</div>`;
         }
 
+        let botaoInstituicao = '';
+        
+        // Cria o botão da Instituição apenas se o perfil for do tipo 'instituicao'
+        if (logado.tipo === 'instituicao') {
+            const linkInstituicao = estaNaSubpasta ? 'instituicao.html' : 'pages/instituicao.html';
+            // Corrigido para 'botaoInstituicao' e alterado o texto visual do botão
+            botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel da ONG</a>`;
+        }
+
         menu.style.display = 'flex';
         menu.style.alignItems = 'center';
         menu.style.gap = '15px';
@@ -245,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${miniaturaHtml}
                 <span class="usuario-saudacao">Olá, ${primeiroNome}</span>
             </div>
-            <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
+            ${botaoInstituicao} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
             <button onclick="sair()" class="login-trigger usuario-acao" type="button">Sair</button>
         `;
     }
@@ -460,10 +475,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             let categoriaAtual = params.get('categoria') || '';
 
             const aplicarFiltro = (categoria) => {
-                categoriaAtual = categoria;
                 const filtradas = categoria
-                    ? instituicoes.filter(instituicao => { return Array.isArray(instituicao.categorias_aceitas) && instituicao.categorias_aceitas.includes(categoria)})
-                    : instituicoes;
+                ? instituicoes.filter(instituicao => { 
+                return Array.isArray(instituicao.categorias_aceitas) && 
+               instituicao.categorias_aceitas.some(cat => cat.toLowerCase() === categoria.toLowerCase());
+                })
+                : instituicoes;
 
                 document.querySelectorAll('.filtro-ong').forEach(btn => {
                     btn.classList.toggle('ativo', btn.dataset.categoria === categoria);

@@ -1,13 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
+    //verifica se o usuario é um administrador
+    validarAcessoAdmin();
     // Carrega a lista assim que a página abre
     carregarONGsPendentes();
 });
 
-// 1. CARREGAMENTO DA TABELA
+function validarAcessoAdmin() {
+    const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
+    
+    // Verifica se existe alguém logado e se o tipo é administrador
+    if (!logado || logado.tipo !== 'administrador') {
+        window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
+        window.location.href = "../index.html";
+    }
+}
+
+//CARREGAMENTO DA TABELA
 async function carregarONGsPendentes() {
     try {
-        // Pede para o Back-end a lista de ONGs que precisam de aprovação
-        const response = await fetch(window.deerApi('/admin/instituicoes-pendentes'));
+        //Pega a etiqueta (crachá) do Administrador
+        const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
+        const tipoDoUsuario = logado ? logado.tipo : '';
+
+        // Pede para o Back-end a lista de ONGs enviando a etiqueta de segurança
+        const response = await fetch(window.deerApi('/admin/instituicoes-pendentes'), {
+            method: 'GET',
+            headers: {
+                'tipo-usuario': tipoDoUsuario
+            }
+        });
+        
         const dados = await response.json();
         
         // Salva a lista globalmente para os modais conseguirem ler os dados depois
@@ -16,12 +38,12 @@ async function carregarONGsPendentes() {
         const tbody = document.querySelector('.admin-table tbody');
         tbody.innerHTML = ''; // Limpa a tabela
 
-        if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">Nenhuma solicitação pendente.</td></tr>';
+        if (dados.length === 0 || !response.ok) { 
+            tbody.innerHTML = '<tr><td colspan="5">Nenhuma solicitação pendente ou acesso negado.</td></tr>';
             return;
         }
 
-        // Desenha a tabela com os dados reais
+        //Desenha a tabela com os dados reais
         dados.forEach(instituicao => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -120,9 +142,17 @@ window.executarAcaoPendente = async function() {
     btn.disabled = true;
     btn.textContent = 'Processando...';
 
+    const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
+    const tipoDoUsuario = logado ? logado.tipo : '';
+
     try {
         await fetch(window.deerApi(`/admin/instituicoes/${acaoPendente.id}/${acaoPendente.tipo}`), { 
-            method: 'PUT' 
+            method: 'PUT',
+            
+            headers: {
+                'Content-Type': 'application/json',
+                'tipo-usuario': tipoDoUsuario
+            }
         });
         
         fecharModalConfirmacao();
