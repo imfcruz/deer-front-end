@@ -421,6 +421,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const [titulo, mensagem, tipo] = mensagens[statusPagamento] || mensagens.pendente;
         window.mostrarAvisoGlobal(titulo, mensagem, tipo);
+
+        paramsPagamento.delete('pagamento');
+        const novaQuery = paramsPagamento.toString();
+        const novaUrl = `${window.location.pathname}${novaQuery ? `?${novaQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, document.title, novaUrl);
     }
 
     function normalizarValorDoacao(valorDigitado) {
