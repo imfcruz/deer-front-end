@@ -201,12 +201,7 @@ if (formLogin) {
             if (response.ok) {
                 sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
                 const estaNaSubpasta = window.location.pathname.includes('/pages/');
-
-                if (resultado.usuario.tipo === 'administrador') {
-                    window.location.href = estaNaSubpasta ? "administracao.html" : "pages/administracao.html";
-                } else {
-                    window.location.href = estaNaSubpasta ? "../index.html" : "index.html";
-                }
+                
             } else {
                 const toast = document.getElementById('pop-up-erro');
                 if (toast) toast.classList.add("show");
@@ -243,12 +238,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let botaoInstituicao = '';
-        
-        // Cria o botão da Instituição apenas se o perfil for do tipo 'instituicao'
+        let botaoAdmin = '';
+
         if (logado.tipo === 'instituicao') {
             const linkInstituicao = estaNaSubpasta ? 'instituicao.html' : 'pages/instituicao.html';
-            // Corrigido para 'botaoInstituicao' e alterado o texto visual do botão
             botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel da ONG</a>`;
+        }
+        
+        if (logado.tipo === 'administrador') {
+            const linkAdmin = estaNaSubpasta ? 'administracao.html' : 'pages/administracao.html';
+            botaoAdmin = `<a href="${linkAdmin}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel de Administrador</a>`;
         }
 
         menu.style.display = 'flex';
@@ -260,7 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${miniaturaHtml}
                 <span class="usuario-saudacao">Olá, ${primeiroNome}</span>
             </div>
-            ${botaoInstituicao} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
+            ${botaoInstituicao} 
+            ${botaoAdmin} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
             <button onclick="sair()" class="login-trigger usuario-acao" type="button">Sair</button>
         `;
     }
