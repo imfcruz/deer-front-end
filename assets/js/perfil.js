@@ -9,10 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('deer_sessao', JSON.stringify(sessao));
     }
 
-    // Usado apenas para upload de foto no Storage. A chave anon depende das policies do Supabase.
-    const SUPABASE_URL = 'https://uqcufnmysnxvmhgyphks.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxY3Vmbm15c254dm1oZ3lwaGtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4ODIyNjQsImV4cCI6MjA5MTQ1ODI2NH0.v7UhfK1-TzP0c0mqC0ae9_Vh0ig1w5I-ZVoiMFtfusU';
-
     // essas variaveis são usadas em varias partes do codigo, então foram definidas aqui
     const inputHex = document.getElementById('input-hex');
     const headerEl = document.getElementById('perfil-header');
@@ -37,6 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.textContent = mensagem;
             mostrarToast(toast.id);
         }
+    }
+
+    function textoSeguro(valor = '') {
+        return String(valor || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     function corEhClara(cor) {
@@ -81,9 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const iniciais = usuario.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
         if (usuario.perfil_url) {
-            avatar.innerHTML = `<img src="${usuario.perfil_url}" alt="Foto de perfil" class="perfil-avatar-img">`;
+            avatar.innerHTML = `<img src="${textoSeguro(usuario.perfil_url)}" alt="Foto de perfil" class="perfil-avatar-img">`;
         } else {
-            avatar.innerHTML = `<span>${iniciais}</span>`;
+            avatar.innerHTML = `<span>${textoSeguro(iniciais)}</span>`;
         }
 
         // texto do overlay muda conforme tem foto ou não
@@ -142,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ tema_preferido: tema })
                 });
 
@@ -164,7 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!box) return;
 
         try {
-            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`));
+            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`), {
+                headers: window.deerAuthHeaders()
+            });
             const resultado = await response.json();
 
             if (!response.ok) throw new Error(resultado.error || 'Erro ao buscar instituição.');
@@ -180,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }[status] || status;
 
             box.innerHTML = `
-                <span class="instituicao-status ${status}">${textoStatus}</span>
-                <h4>${instituicao.nome_publico || instituicao.razao_social || 'Instituição vinculada'}</h4>
+                <span class="instituicao-status ${textoSeguro(status)}">${textoSeguro(textoStatus)}</span>
+                <h4>${textoSeguro(instituicao.nome_publico || instituicao.razao_social || 'Instituição vinculada')}</h4>
                 <p>${status === 'aprovada'
                     ? 'Sua instituição já foi aprovada e poderá aparecer na página de instituições.'
                     : status === 'rejeitada'
@@ -231,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(dadosAtualizados)
             });
 
@@ -275,18 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loading.classList.add('ativo');
 
         try {
-            const extensao = arquivo.name.split('.').pop();
-            const caminhoArquivo = `avatares/${sessao.id}.${extensao}`;
-
             const respostaUpload = await fetch(
-                `${SUPABASE_URL}/storage/v1/object/imagens/${caminhoArquivo}`,
+                window.deerApi(`/usuarios/${sessao.id}/foto`),
                 {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': arquivo.type,
-                        'x-upsert': 'true',
-                    },
+                    headers: window.deerAuthHeaders({ 'Content-Type': arquivo.type }),
                     body: arquivo
                 }
             );
@@ -297,19 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Falha no upload');
             }
 
-            const urlFoto = `${SUPABASE_URL}/storage/v1/object/public/imagens/${caminhoArquivo}?t=${Date.now()}`;
-
-            const respostaBanco = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ perfil_url: urlFoto })
-            });
-
-            if (!respostaBanco.ok) {
-                const erroTexto = await respostaBanco.text();
-                console.error('Erro ao salvar URL:', erroTexto);
-                throw new Error('Falha ao salvar URL');
-            }
+            const resultado = await respostaUpload.json();
+            const urlFoto = resultado.perfil_url;
 
             Object.assign(sessao, { perfil_url: urlFoto });
             sessionStorage.setItem('deer_sessao', JSON.stringify(sessao));
@@ -366,7 +355,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Recarrega do back-end para evitar usar dados velhos guardados no sessionStorage.
     async function atualizarUsuarioDaSessao() {
         try {
-            const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`));
+            const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
+                headers: window.deerAuthHeaders()
+            });
             const resultado = await response.json();
             if (!response.ok || !resultado.usuario) return;
 
@@ -424,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(enderecoAtualizado)
             });
 
@@ -566,12 +557,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ senha: senhaConfirmadaExclusao })
             });
 
             if (response.ok) {
-                sessionStorage.removeItem('deer_sessao');
+                window.limparSessaoDeer();
                 window.location.href = '../pages/login.html?conta=excluida';
             } else {
                 const resultado = await response.json().catch(() => ({}));

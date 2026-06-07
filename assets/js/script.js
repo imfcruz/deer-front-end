@@ -159,12 +159,12 @@ if (formCadastro) {
 
             const resultado = await response.json();
 
-            if (response.ok) {
-                const toast = document.getElementById('pop-up-sucesso');
-                if (toast) toast.classList.add("show");
+                if (response.ok) {
+                    const toast = document.getElementById('pop-up-sucesso');
+                    if (toast) toast.classList.add("show");
 
                 setTimeout(() => {
-                    sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.data[0]));
+                    window.salvarSessaoDeer(resultado.data[0], resultado.token);
                     sessionStorage.removeItem('endereco_opcao');
                     window.location.href = "../index.html"; 
                 }, 2000);
@@ -199,7 +199,7 @@ if (formLogin) {
             const resultado = await response.json();
 
             if (response.ok) {
-                sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
+                window.salvarSessaoDeer(resultado.usuario, resultado.token);
                 const estaNaSubpasta = window.location.pathname.includes('/pages/');
                 
             } else {
@@ -231,10 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let miniaturaHtml = '';
         if (logado.perfil_url) {
-            miniaturaHtml = `<img src="${logado.perfil_url}" alt="Foto" class="usuario-foto">`;
+            miniaturaHtml = `<img src="${textoSeguro(logado.perfil_url)}" alt="Foto" class="usuario-foto">`;
         } else {
             const iniciais = logado.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-            miniaturaHtml = `<div class="usuario-iniciais">${iniciais}</div>`;
+            miniaturaHtml = `<div class="usuario-iniciais">${textoSeguro(iniciais)}</div>`;
         }
 
         let botaoInstituicao = '';
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menu.innerHTML = `
             <div class="usuario-identidade">
                 ${miniaturaHtml}
-                <span class="usuario-saudacao">Olá, ${primeiroNome}</span>
+                <span class="usuario-saudacao">Olá, ${textoSeguro(primeiroNome)}</span>
             </div>
             ${botaoInstituicao} 
             ${botaoAdmin} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.sair = () => {
-    sessionStorage.removeItem('deer_sessao');
+    window.limparSessaoDeer();
     window.location.href = window.location.pathname.includes('pages') ? "../index.html" : "index.html";
 };
 
@@ -368,7 +368,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
                             }).join('') + (categorias.length > 4 ? `<span style="background: var(--surface-strong); font-weight: 600;">+${categorias.length - 4}</span>` : '')
                             : '<span>Categorias em análise</span>'}
                     </div>
-                    <button type="button" class="btn-card-contribuir" data-recurso-desenvolvimento>Contribuir</button>
+                    <button type="button" class="btn-card-contribuir" data-doar-instituicao data-instituicao-id="${textoSeguro(instituicao.id)}" data-instituicao-nome="${textoSeguro(nome)}">Contribuir</button>
                 </div>
             </article>
         `;
@@ -411,18 +411,59 @@ async function buscarInstituicoesAprovadas() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Modal usado nos botões de doação enquanto o fluxo completo ainda está em desenvolvimento.
-    const abrirModalDesenvolvimento = () => {
-        let modal = document.getElementById('modal-recurso-desenvolvimento');
+    const paramsPagamento = new URLSearchParams(window.location.search);
+    const statusPagamento = paramsPagamento.get('pagamento');
+    if (statusPagamento && window.mostrarAvisoGlobal) {
+        const mensagens = {
+            sucesso: ['Pagamento aprovado', 'Seu pagamento foi aprovado!!!', 'sucesso'],
+            falha: ['Pagamento não concluído', 'Alguma coisa deu errado no seu pagamento...', 'erro'],
+            pendente: ['Pagamento pendente', 'Seu pagamento está pendente...', 'erro']
+        };
+        const [titulo, mensagem, tipo] = mensagens[statusPagamento] || mensagens.pendente;
+        window.mostrarAvisoGlobal(titulo, mensagem, tipo);
+    }
+
+    function normalizarValorDoacao(valorDigitado) {
+        const valorLimpo = valorDigitado.trim().replace(',', '.');
+
+        if (!/^\d+(\.\d{1,2})?$/.test(valorLimpo)) {
+            return null;
+        }
+
+        const valor = Number(valorLimpo);
+        return Number.isFinite(valor) ? valor : null;
+    }
+
+    async function lerRespostaJson(response) {
+        const texto = await response.text();
+
+        try {
+            return texto ? JSON.parse(texto) : {};
+        } catch {
+            return {
+                error: 'O servidor respondeu em um formato inesperado. Verifique se o back-end está atualizado.'
+            };
+        }
+    }
+
+    // Modal inicial do fluxo de doação: coleta valor e redireciona para o Checkout Pro sandbox.
+    const abrirModalDoacao = (instituicaoId, instituicaoNome) => {
+        let modal = document.getElementById('modal-doacao');
         if (!modal) {
             modal = document.createElement('div');
-            modal.id = 'modal-recurso-desenvolvimento';
+            modal.id = 'modal-doacao';
             modal.className = 'modal-desenvolvimento-overlay';
             modal.innerHTML = `
-                <div class="modal-desenvolvimento" role="dialog" aria-modal="true" aria-labelledby="modal-dev-titulo">
-                    <h3 id="modal-dev-titulo">Recurso em desenvolvimento</h3>
-                    <p>O fluxo de doação ainda está sendo trabalhado. Em breve você poderá contribuir diretamente pela plataforma.</p>
-                    <button type="button" class="btn-fechar-modal-dev">Entendi</button>
+                <div class="modal-desenvolvimento" role="dialog" aria-modal="true" aria-labelledby="modal-doacao-titulo">
+                    <h3 id="modal-doacao-titulo">Contribuir com dinheiro</h3>
+                    <p id="modal-doacao-texto">Informe um valor para simular a doação.</p>
+                    <label for="valor-doacao" style="display:block; margin-top: 16px; font-weight: 700;">Valor da doação</label>
+                    <input id="valor-doacao" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex: 25,00" style="width:100%; margin-top:8px; padding:12px 14px; border-radius:10px; border:1px solid var(--field-border); background:var(--input-bg); color:var(--dark-text);">
+                    <span id="erro-doacao" style="display:none; color:var(--red-base); font-weight:700; margin-top:10px; font-size:.86rem;"></span>
+                    <div style="display:flex; gap:12px; margin-top:22px;">
+                        <button type="button" class="btn-fechar-modal-dev" style="flex:1;">Cancelar</button>
+                        <button type="button" id="btn-confirmar-doacao" class="btn-card-contribuir" style="flex:1;">Continuar</button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -434,12 +475,60 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const inputValor = modal.querySelector('#valor-doacao');
+        const erro = modal.querySelector('#erro-doacao');
+        const texto = modal.querySelector('#modal-doacao-texto');
+        const btnConfirmar = modal.querySelector('#btn-confirmar-doacao');
+
+        texto.textContent = `Doação teste para ${instituicaoNome}.`;
+        inputValor.value = '';
+        erro.style.display = 'none';
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = 'Continuar';
+
+        btnConfirmar.onclick = async () => {
+            const valor = normalizarValorDoacao(inputValor.value);
+            erro.style.display = 'none';
+
+            if (!Number.isFinite(valor) || valor < 1) {
+                erro.textContent = 'Informe um valor válido a partir de R$ 1,00, usando no máximo duas casas decimais.';
+                erro.style.display = 'block';
+                return;
+            }
+
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = 'Indo pro pagamento...';
+
+            try {
+                const response = await fetch(window.deerApi('/pagamentos/preferencia'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ instituicao_id: Number(instituicaoId), valor })
+                });
+
+                const resultado = await lerRespostaJson(response);
+
+                if (!response.ok || !resultado.checkout_url) {
+                    throw new Error(resultado.error || 'Erro ao continuar');
+                }
+
+                window.location.href = resultado.checkout_url;
+            } catch (error) {
+                erro.textContent = error.message || 'Não foi possível continuar para o pagamento.';
+                erro.style.display = 'block';
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Continuar';
+            }
+        };
+
         modal.classList.add('ativo');
+        setTimeout(() => inputValor.focus(), 80);
     };
 
     document.addEventListener('click', (e) => {
-        if (e.target.closest('[data-recurso-desenvolvimento]')) {
-            abrirModalDesenvolvimento();
+        const botaoDoacao = e.target.closest('[data-doar-instituicao]');
+        if (botaoDoacao) {
+            abrirModalDoacao(botaoDoacao.dataset.instituicaoId, botaoDoacao.dataset.instituicaoNome);
         }
     });
 

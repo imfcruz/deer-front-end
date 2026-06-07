@@ -81,19 +81,10 @@
                 const resultado = await response.json();
 
                 if (response.ok) {
-                    sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
+                    window.salvarSessaoDeer(resultado.usuario, resultado.token);
                     window.location.href = '../index.html';
                 } else {
-                    const msg = resultado.error || '';
-                    if (msg.includes('não encontrado') || msg.includes('not found')) {
-                        mostrarErroGlobal('Nenhuma conta encontrada com esses dados.');
-                    } else if (msg.includes('senha') || msg.includes('inválid')) {
-                        mostrarErroGlobal('Senha incorreta. Tente novamente.');
-                        senhaInput.classList.add('erro');
-                        identificadorInput.classList.remove('erro');
-                    } else {
-                        mostrarErroGlobal('E-mail/CPF ou senha incorretos.');
-                    }
+                    mostrarErroGlobal(resultado.error || 'E-mail/CPF ou senha incorretos.');
                 }
             } catch {
                 mostrarErroGlobal('Servidor indisponível. Verifique sua conexão.');
