@@ -392,8 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     try {
                         const response = await fetch(window.deerApi(`/instituicoes/${instituicao.id}`), {
                             method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ usuario_id: sessao.id })
+                            headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' })
                         });
 
                         const resultado = await response.json().catch(() => ({}));
@@ -417,7 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function carregarSolicitacaoExistente() {
         try {
-            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`));
+            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`), {
+                headers: window.deerAuthHeaders()
+            });
             const resultado = await response.json();
 
             if (response.ok && resultado.instituicao) {
@@ -674,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(window.deerApi('/instituicoes'), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(dados)
             });
 

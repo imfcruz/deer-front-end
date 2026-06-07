@@ -5,12 +5,23 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarONGsPendentes();
 });
 
+function textoSeguro(valor = '') {
+    return String(valor || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function validarAcessoAdmin() {
     const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
     
     // Verifica se existe alguém logado e se o tipo é administrador
     if (!logado || logado.tipo !== 'administrador') {
-        window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
+        if (window.mostrarAvisoGlobal) {
+            window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
+        }
         window.location.href = "../index.html";
     }
 }
@@ -18,42 +29,37 @@ function validarAcessoAdmin() {
 //CARREGAMENTO DA TABELA
 async function carregarONGsPendentes() {
     try {
-        //Pega a etiqueta (crachá) do Administrador
-        const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
-        const tipoDoUsuario = logado ? logado.tipo : '';
-
-        // Pede para o Back-end a lista de ONGs enviando a etiqueta de segurança
+        // Pede para o Back-end a lista de solicitações usando o token salvo no login.
         const response = await fetch(window.deerApi('/admin/instituicoes-pendentes'), {
             method: 'GET',
-            headers: {
-                'tipo-usuario': tipoDoUsuario
-            }
+            headers: window.deerAuthHeaders()
         });
         
         const dados = await response.json();
+        const lista = Array.isArray(dados) ? dados : [];
         
         // Salva a lista globalmente para os modais conseguirem ler os dados depois
-        window.listaDeONGs = dados;
+        window.listaDeONGs = lista;
 
         const tbody = document.querySelector('.admin-table tbody');
         tbody.innerHTML = ''; // Limpa a tabela
 
-        if (dados.length === 0 || !response.ok) { 
+        if (!response.ok || lista.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5">Nenhuma solicitação pendente ou acesso negado.</td></tr>';
             return;
         }
 
         //Desenha a tabela com os dados reais
-        dados.forEach(instituicao => {
+        lista.forEach(instituicao => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="align-middle">
                     <a href="" onclick="abrirModalDetalhes(${instituicao.id}); return false;" style="color: var(--red-base); font-weight: 600; text-decoration: none;">
-                        ${instituicao.nome_publico || instituicao.razao_social}
+                        ${textoSeguro(instituicao.nome_publico || instituicao.razao_social)}
                     </a>
                 </td>
-                <td class="align-middle">${instituicao.cnpj}</td>
-                <td class="align-middle">${instituicao.status}</td>
+                <td class="align-middle">${textoSeguro(instituicao.cnpj)}</td>
+                <td class="align-middle">${textoSeguro(instituicao.status)}</td>
                 <td class="align-middle">
                     <button type="button" class="btn btn-sm btn-success" title="Aceitar Instituição" onclick="prepararConfirmacao(${instituicao.id}, 'aprovar')">
                         <img src="../assets/img/check.png" style="width: 24px;">
@@ -109,7 +115,7 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     if (tipoAcao === 'aprovar') {
         titulo.textContent = 'Aprovar Instituição';
         titulo.style.color = '#2E7D32'; 
-        texto.innerHTML = `Tem certeza que deseja <strong>APROVAR</strong> a instituição <strong>${nomeOng}</strong>?<br>Ela passará a aparecer imediatamente na página de doações.`;
+        texto.innerHTML = `Tem certeza que deseja <strong>APROVAR</strong> a instituição <strong>${textoSeguro(nomeOng)}</strong>?<br>Ela passará a aparecer imediatamente na página de doações.`;
         icone.style.background = 'rgba(67, 160, 71, 0.13)';
         icone.style.color = '#2E7D32';
         icone.textContent = '✓';
@@ -118,7 +124,7 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     } else {
         titulo.textContent = 'Recusar Instituição';
         titulo.style.color = 'var(--red-base)'; 
-        texto.innerHTML = `Tem certeza que deseja <strong>RECUSAR</strong> a instituição <strong>${nomeOng}</strong>?<br>Essa solicitação será alterada para rejeitada.`;
+        texto.innerHTML = `Tem certeza que deseja <strong>RECUSAR</strong> a instituição <strong>${textoSeguro(nomeOng)}</strong>?<br>Essa solicitação será alterada para rejeitada.`;
         icone.style.background = 'rgba(229, 57, 53, 0.12)';
         icone.style.color = 'var(--red-base)';
         icone.textContent = '!';
@@ -142,26 +148,24 @@ window.executarAcaoPendente = async function() {
     btn.disabled = true;
     btn.textContent = 'Processando...';
 
-    const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
-    const tipoDoUsuario = logado ? logado.tipo : '';
-
     try {
-        await fetch(window.deerApi(`/admin/instituicoes/${acaoPendente.id}/${acaoPendente.tipo}`), { 
+        const response = await fetch(window.deerApi(`/admin/instituicoes/${acaoPendente.id}/${acaoPendente.tipo}`), {
             method: 'PUT',
-            
-            headers: {
-                'Content-Type': 'application/json',
-                'tipo-usuario': tipoDoUsuario
-            }
+            headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' })
         });
+
+        if (!response.ok) throw new Error('Erro ao processar solicitação.');
         
         fecharModalConfirmacao();
         carregarONGsPendentes(); // Atualiza a tabela tirando a ONG da lista
     } catch (error) {
         console.error('Erro ao processar:', error);
-        alert('Ocorreu um erro ao processar a solicitação.');
+        btn.textContent = 'Erro ao processar';
+        setTimeout(() => {
+            btn.textContent = textoOriginal;
+        }, 1800);
     } finally {
         btn.disabled = false;
-        btn.textContent = textoOriginal;
+        if (btn.textContent !== 'Erro ao processar') btn.textContent = textoOriginal;
     }
 };

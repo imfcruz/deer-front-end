@@ -218,7 +218,7 @@
                 if (response.ok) {
                     mostrarToast('pop-up-sucesso');
                     setTimeout(() => {
-                        sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.data[0]));
+                        window.salvarSessaoDeer(resultado.data[0], resultado.token);
                         window.location.href = '../index.html';
                     }, 2000);
                 } else {
