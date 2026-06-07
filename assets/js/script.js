@@ -200,7 +200,8 @@ if (formLogin) {
 
             if (response.ok) {
                 sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
-                window.location.href = "../index.html";
+                const estaNaSubpasta = window.location.pathname.includes('/pages/');
+                
             } else {
                 const toast = document.getElementById('pop-up-erro');
                 if (toast) toast.classList.add("show");
@@ -236,6 +237,19 @@ document.addEventListener('DOMContentLoaded', () => {
             miniaturaHtml = `<div class="usuario-iniciais">${iniciais}</div>`;
         }
 
+        let botaoInstituicao = '';
+        let botaoAdmin = '';
+
+        if (logado.tipo === 'instituicao') {
+            const linkInstituicao = estaNaSubpasta ? 'instituicao.html' : 'pages/instituicao.html';
+            botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel da ONG</a>`;
+        }
+        
+        if (logado.tipo === 'administrador') {
+            const linkAdmin = estaNaSubpasta ? 'administracao.html' : 'pages/administracao.html';
+            botaoAdmin = `<a href="${linkAdmin}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel de Administrador</a>`;
+        }
+
         menu.style.display = 'flex';
         menu.style.alignItems = 'center';
         menu.style.gap = '15px';
@@ -245,7 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${miniaturaHtml}
                 <span class="usuario-saudacao">Olá, ${primeiroNome}</span>
             </div>
-            <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
+            ${botaoInstituicao} 
+            ${botaoAdmin} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
             <button onclick="sair()" class="login-trigger usuario-acao" type="button">Sair</button>
         `;
     }
@@ -350,7 +365,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
                             ? categorias.slice(0, 4).map(categoria => {
                                 const meta = categoriasDoacao[categoria];
                                 return `<span>${meta ? `${iconeCategoriaHtml(meta)}${textoSeguro(meta.nome)}` : textoSeguro(categoria)}</span>`;
-                            }).join('')
+                            }).join('') + (categorias.length > 4 ? `<span style="background: var(--surface-strong); font-weight: 600;">+${categorias.length - 4}</span>` : '')
                             : '<span>Categorias em análise</span>'}
                     </div>
                     <button type="button" class="btn-card-contribuir" data-recurso-desenvolvimento>Contribuir</button>
@@ -460,10 +475,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             let categoriaAtual = params.get('categoria') || '';
 
             const aplicarFiltro = (categoria) => {
-                categoriaAtual = categoria;
                 const filtradas = categoria
-                    ? instituicoes.filter(instituicao => Array.isArray(instituicao.categorias_aceitas) && instituicao.categorias_aceitas.includes(categoria))
-                    : instituicoes;
+                ? instituicoes.filter(instituicao => { 
+                return Array.isArray(instituicao.categorias_aceitas) && 
+               instituicao.categorias_aceitas.some(cat => cat.toLowerCase() === categoria.toLowerCase());
+                })
+                : instituicoes;
 
                 document.querySelectorAll('.filtro-ong').forEach(btn => {
                     btn.classList.toggle('ativo', btn.dataset.categoria === categoria);
@@ -475,6 +492,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.filtro-ong').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const categoria = btn.dataset.categoria || '';
+                    
+                    if (categoriaAtual === categoria) {
+                    categoria = ''; 
+                    }
                     const url = categoria ? `ongs.html?categoria=${encodeURIComponent(categoria)}` : 'ongs.html';
                     window.history.replaceState({}, '', url);
                     aplicarFiltro(categoria);
