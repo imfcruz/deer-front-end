@@ -17,6 +17,26 @@
             </a>
             <div class="usuario" id="user-menu"></div>
         </div>
+    <!--Botões para aumentar e diminuir o tamanho da fonte (ACESSIBILIDADE)-->
+    <div class="acessibilidade">
+    <button type="button" onclick="aumentarFonte()">A+</button>
+    <button type="button" onclick="diminuirFonte()">A-</button>
+
+   <!--Ïcone/botão para acionar o alto contraste-->
+<button type="button" onclick="alternarContraste()" title="Alto contraste">
+    🌓
+</button>
+  
+<!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
+</button>
+
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
+
+</div>
+
     </header>
 
     <main class="instituicao-page">
@@ -200,5 +220,6 @@
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/instituicoes.js"></script>
+    
 </body>
 </html>
