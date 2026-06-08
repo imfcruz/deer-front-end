@@ -1248,3 +1248,38 @@ html[data-theme="escuro"] .footer {
     cursor: pointer;
     font-weight: bold;
 }
+
+/*Botão/Ícone alto contraste - ACESSIBILIDADE*/
+.alto-contraste {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+.alto-contraste * {
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+.alto-contraste a {
+    color: #ffff00 !important;
+}
+
+.alto-contraste button {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+.alto-contraste input,
+.alto-contraste textarea,
+.alto-contraste select {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+/*Botão de navegação pelo teclado*/
+button:focus,
+a:focus,
+input:focus {
+    outline: 3px solid #ff9800;
+}
