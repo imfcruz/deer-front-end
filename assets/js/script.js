@@ -766,7 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-//Botão/ícone alto-falante 
+//Botão/ícone speech
 //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para
 let lendo = false;
 

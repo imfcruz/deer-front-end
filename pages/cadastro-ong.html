@@ -22,21 +22,18 @@
     <button type="button" onclick="aumentarFonte()">A+</button>
     <button type="button" onclick="diminuirFonte()">A-</button>
 
-    <!--Ïcone/botão para acionar o alto contraste-->
+   <!--Ïcone/botão para acionar o alto contraste-->
 <button type="button" onclick="alternarContraste()" title="Alto contraste">
     🌓
 </button>
-
-<!--Botão de navegação pelo teclado-->
-<button tabindex="0">Doar</button>
-
+  
 <!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
-<button type="button" onclick="lerPagina()">
-    🔊 Ouvir
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
 </button>
 
-<button onclick="speechSynthesis.pause()">⏸ Pausar</button> <!--Botao para pausar o áudio-->
-<button onclick="speechSynthesis.resume()">▶ Continuar</button> <!--Botao para continuar o áudio-->
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
 
 </div>
 
