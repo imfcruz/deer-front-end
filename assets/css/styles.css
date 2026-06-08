@@ -1233,3 +1233,18 @@ html[data-theme="escuro"] .footer {
         font-size: 0.82rem;
     }
 }
+/*Botoes a+ a-*/
+.acessibilidade {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.acessibilidade button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}

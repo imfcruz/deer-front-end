@@ -737,3 +737,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.aplicarTemaPlataforma(temaSalvo);
 });
+
+//Botões para aumentar e diminuir a fonte (Acessibilidade)
+let tamanhoFonte = 16;
+function aumentarFonte(){
+    tamanhoFonte += 2;
+    document.body.style.fontSize = tamanhoFonte + 'px';
+    localStorage.setItem('fonte', tamanhoFonte);//mantém a configuração de tamanho escolhida pelo usuário salva e permite navegar para as outras páginas com a configuração salva
+}
+function diminuirFonte(){
+    tamanhoFonte -= 2;
+    document.body.style.fontSize = tamanhoFonte + 'px';
+    localStorage.setItem('fonte', tamanhoFonte);//idem (fica tudo no armazenamento local (localStorage))
+}
