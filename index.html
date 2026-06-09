@@ -15,6 +15,7 @@
 </head>
 
 <body>
+    <!-- Cabecalho compartilhado: o script.js troca os links por dados do usuario quando existe sessao. -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -50,6 +51,7 @@
 
     </header>
 
+    <!-- Primeira dobra da home, com chamadas que levam para as instituicoes carregadas pelo JavaScript. -->
     <main class="tela-inicial">
         <section class="conteudo-tela-inicial">
             <div class="slogan">
@@ -68,7 +70,7 @@
         
     </main>
 
-    <!-- como funciona -->
+    <!-- Explica a jornada do usuario em tres passos simples. -->
     <section class="como-funciona">
         <div class="secao-container">
             <span class="secao-tag">Simples assim</span>
@@ -135,6 +137,7 @@
         </div>
     </section>
 
+    <!-- Cards de valor do produto. Aqui entraram icones proprios para manter o visual consistente. -->
     <section class="beneficios-deer">
         <div class="secao-container">
             <span class="secao-tag">Por que usar a DEER?</span>
@@ -161,6 +164,7 @@
         </div>
     </section>
 
+    <!-- Este grid nasce com texto de carregamento e depois recebe os cards vindos da rota /instituicoes. -->
     <section class="ongs-destaque" id="ongs-aprovadas">
         <div class="secao-container">
             <span class="secao-tag">Rede DEER</span>
@@ -197,7 +201,7 @@
         </div>
     </section>
 
-    <!-- footer do site com algumas infos q por enqauanto são genericas -->
+    <!-- Rodape com navegacao e contatos. Abaixo tambem fica o widget VLibras usado em acessibilidade. -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-marca">
@@ -227,6 +231,7 @@
                 <div class="vw-plugin-top-wrapper"></div>
             </div>
         </div>
+        <!-- VLibras e um widget publico do governo para traducao de conteudo em Libras. -->
         <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
         <script>
             new window.VLibras.Widget('https://vlibras.gov.br/app');
@@ -234,6 +239,7 @@
 
     </footer>
 
+    <!-- config.js precisa vir antes porque script.js usa a funcao deerApi para chamar o back-end. -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/script.js"></script>
 </body>

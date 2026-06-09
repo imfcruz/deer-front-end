@@ -14,6 +14,7 @@
 </head>
 <body>
     
+    <!-- Cabecalho simples do painel. O acesso real e validado no administracao.js e no back-end. -->
     <header class="header header-admin">
         <div class="header-container">
             <a href="../index.html" class="logo">
@@ -44,6 +45,7 @@
 
     <main class="admin-main">
         
+        <!-- A tabela comeca vazia; o administracao.js busca os pedidos pendentes e monta as linhas. -->
         <div class="admin-table-container">
             
             <table class="table text-center table-bordered table-hover admin-table">
@@ -64,6 +66,7 @@
             </table>
         </div>
             
+        <!-- Modal de leitura dos dados enviados pela instituicao antes de aprovar ou recusar. -->
         <div class="modal-desenvolvimento-overlay" id="modal-detalhes-ong">
             <div class="modal-aviso" style="max-width: 550px; text-align: left;">
             <h3 id="modal-ong-nome" style="color: var(--red-base); margin-bottom: 15px;">Nome da ONG</h3>
@@ -80,6 +83,7 @@
             </div>
         </div>
 
+        <!-- Modal de confirmacao para evitar aprovar ou recusar uma solicitacao por clique acidental. -->
         <div class="modal-aviso-overlay" id="modal-confirmacao-acao">
             <div class="modal-aviso">
                 <div class="icone-aviso" id="icone-confirmacao">!</div>
@@ -94,6 +98,7 @@
         </div>
 
     </main>
+    <!-- config.js libera a API e administracao.js controla tabela, modais e acoes de aprovacao. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/administracao.js"></script>
 </body>

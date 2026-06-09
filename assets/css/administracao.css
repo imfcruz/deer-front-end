@@ -1,3 +1,5 @@
+/* Estilos do painel de administracao. O administracao.js preenche tabela e modais com dados do back-end. */
+
 /* Força o header a ter fundo branco sólido apenas nesta página */
 .header-admin {
     background-color: var(--white) !important;

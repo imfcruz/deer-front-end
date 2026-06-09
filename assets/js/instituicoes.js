@@ -1,3 +1,4 @@
+// Mapa das categorias aceitas pela instituicao. Os valores sao enviados ao banco e os nomes aparecem na tela.
 const categoriasInstituicao = {
     alimentos: { nome: 'Alimentos', icone: 'diet.png' },
     roupas: { nome: 'Roupas', icone: 'clothes.png' },
@@ -8,6 +9,7 @@ const categoriasInstituicao = {
     moveis: { nome: 'Móveis e utensílios', icone: 'dining.png' }
 };
 
+// Tipos de chave Pix aceitos no formulario. O value vai para o banco, o texto aparece para o usuario.
 const tiposPix = {
     cpf: 'CPF',
     cnpj: 'CNPJ',
@@ -16,7 +18,7 @@ const tiposPix = {
     aleatoria: 'Aleatória'
 };
 
-// Helpers de formatação usados nas máscaras e nas validações do formulário.
+// Helpers de formatacao usados nas mascaras e nas validacoes do formulario.
 function limparNumero(valor = '') {
     return String(valor).replace(/\D/g, '');
 }
@@ -69,6 +71,7 @@ function normalizarChaveAleatoria(valor = '') {
     return partes.join('-');
 }
 
+// Valida a chave Pix conforme o tipo escolhido. Cada tipo possui regra e tamanho diferentes.
 function validarChavePix(tipo, chave) {
     const valor = String(chave || '').trim();
     if (!valor) return 'Informe a chave Pix.';
@@ -104,6 +107,7 @@ function categoriaInstituicaoHtml(categoria) {
     return `<img class="categoria-chip-icone" src="../assets/img/${meta.icone}" alt="">${textoSeguro(meta.nome)}`;
 }
 
+// Mascara visual do CNPJ. A consulta real acontece depois, quando os 14 digitos estao completos.
 function aplicarMascaraCNPJ(input) {
     input.addEventListener('input', () => {
         let v = limparNumero(input.value).slice(0, 14);
@@ -115,6 +119,7 @@ function aplicarMascaraCNPJ(input) {
     });
 }
 
+// Mascara visual do CEP da instituicao.
 function aplicarMascaraCEPInstituicao(input) {
     input.addEventListener('input', () => {
         let v = limparNumero(input.value).slice(0, 8);
@@ -133,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Estado do formulario em etapas e das consultas feitas nas APIs externas.
     let etapaAtual = 1;
     let cnpjConsultado = false;
     let cnpjEmConsulta = false;
@@ -143,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let enderecoLiberado = false;
     let cepExtraidoCNPJ = '';
 
+    // Agrupa os inputs para evitar varios document.getElementById espalhados pelo arquivo.
     const campos = {
         cnpj: document.getElementById('ong-cnpj'),
         razaoSocial: document.getElementById('ong-razao-social'),
@@ -172,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarMascaraCNPJ(campos.cnpj);
     aplicarMascaraCEPInstituicao(campos.cep);
 
-    // O endereço vem do CNPJ bloqueado por padrão; só libera se o usuário pedir correção.
+    // O endereco vem do CNPJ bloqueado por padrao; so libera se o usuario pedir correcao.
     function alternarCamposEndereco(liberado) {
         enderecoLiberado = liberado;
         ['cep', 'numero', 'rua', 'bairro', 'cidade', 'estado'].forEach(campo => {
@@ -189,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     alternarCamposEndereco(false);
 
-    // Se o CEP for alterado manualmente, salvamos a observação para análise interna.
+    // Se o CEP for alterado manualmente, salvamos a observacao para analise interna.
     function obterObservacaoEndereco() {
         const cepAtual = limparNumero(campos.cep.value);
         if (!cepExtraidoCNPJ || !cepAtual || cepAtual === cepExtraidoCNPJ) return '';
@@ -203,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (estado) ajudaCnpj.classList.add(estado);
     }
 
-    // Cada tipo de chave Pix muda placeholder, limite e máscara do campo seguinte.
+    // Cada tipo de chave Pix muda placeholder, limite e mascara do campo seguinte.
     function configurarCampoChavePix(limpar = false) {
         const tipo = campos.tipoChavePix.value;
         const configs = {
@@ -234,12 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (tipo === 'email') campos.chavePix.value = campos.chavePix.value.trim().slice(0, 120);
     }
 
+    // Modal usado para confirmar o cancelamento da solicitacao antes de chamar o back-end.
     function abrirModalCancelamento(callback) {
         acaoConfirmarCancelamento = callback;
         modalCancelamento?.classList.add('ativo');
         modalCancelamento?.setAttribute('aria-hidden', 'false');
     }
 
+    // Fecha o modal e descarta a acao que estava esperando confirmacao.
     function fecharModalCancelamento() {
         modalCancelamento?.classList.remove('ativo');
         modalCancelamento?.setAttribute('aria-hidden', 'true');
@@ -274,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(id)?.classList.remove('visivel');
     }
 
+    // Muda a etapa visivel do formulario e atualiza os circulos de progresso.
     function irParaEtapa(etapa) {
         etapaAtual = etapa;
         limparErroGlobal();
@@ -294,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }[status] || status || 'Em análise';
     }
 
-    // Quando já existe solicitação, a página vira uma tela de acompanhamento em vez de novo cadastro.
+    // Quando ja existe solicitacao, a pagina vira uma tela de acompanhamento em vez de novo cadastro.
     function renderizarSolicitacao(instituicao) {
         const topo = document.querySelector('.instituicao-topo');
         const progress = document.querySelector('.progress-ong');
@@ -390,6 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnCancelar.textContent = 'Cancelando...';
 
                     try {
+                        // Cancelar uma solicitacao chama DELETE no back-end e exige token do usuario dono.
                         const response = await fetch(window.deerApi(`/instituicoes/${instituicao.id}`), {
                             method: 'DELETE',
                             headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' })
@@ -414,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Verifica se o usuario ja tem instituicao cadastrada antes de liberar novo envio.
     async function carregarSolicitacaoExistente() {
         try {
             const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`), {
@@ -431,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarSolicitacaoExistente();
 
-    // Consulta dados públicos do CNPJ na BrasilAPI para reduzir digitação e evitar dados inventados.
+    // Consulta dados publicos do CNPJ na BrasilAPI para reduzir digitacao e evitar dados inventados.
     async function buscarCNPJ(mostrarErroTamanho = true) {
         const cnpj = limparNumero(campos.cnpj.value);
         cnpjConsultado = false;
@@ -453,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('CNPJ não encontrado.');
             const dados = await response.json();
 
+            // Se o usuario mudou o CNPJ enquanto a consulta estava em andamento, ignoramos a resposta antiga.
             if (limparNumero(campos.cnpj.value) !== cnpj) return false;
 
             campos.razaoSocial.value = dados.razao_social || '';
@@ -496,6 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Consulta o CEP quando o endereco precisa ser conferido ou corrigido manualmente.
     async function buscarCEPInstituicao() {
         const cep = limparNumero(campos.cep.value);
         enderecoConsultado = false;
@@ -524,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Etapa 1 depende de um CNPJ consultado e de um nome publico para aparecer no site.
     function validarEtapa1() {
         let ok = true;
         if (limparNumero(campos.cnpj.value).length !== 14 || !cnpjConsultado) {
@@ -537,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return ok;
     }
 
+    // Etapa 2 confirma se o endereco minimo esta pronto para envio.
     function validarEtapa2() {
         let ok = true;
         if (limparNumero(campos.cep.value).length !== 8 || !campos.rua.value.trim() || !campos.cidade.value.trim()) {
@@ -550,10 +566,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return ok;
     }
 
+    // Lê todos os checkboxes marcados e devolve apenas os valores que o back-end espera.
     function categoriasSelecionadas() {
         return Array.from(document.querySelectorAll('.categoria-check input:checked')).map(input => input.value);
     }
 
+    // Etapa 3 fecha os dados publicos, categorias e Pix antes de enviar a solicitacao.
     function validarEtapa3() {
         let ok = true;
         if (campos.descricao.value.trim().length < 20) {
@@ -592,6 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         clearTimeout(timerConsultaCnpj);
+        // Pequeno atraso para evitar varias consultas seguidas enquanto o usuario ainda esta digitando.
         if (cnpj.length === 14 && cnpj !== ultimoCnpjConsultado && !cnpjEmConsulta) {
             timerConsultaCnpj = setTimeout(() => buscarCNPJ(false), 250);
         }
@@ -639,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-ong-back-2').addEventListener('click', () => irParaEtapa(1));
     document.getElementById('btn-ong-back-3').addEventListener('click', () => irParaEtapa(2));
 
-    // Envia a solicitação ao back-end; ela começa como pendente e só aparece publicamente após aprovação.
+    // Envia a solicitacao ao back-end. Ela comeca pendente e so aparece publicamente apos aprovacao.
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         limparErroGlobal();
@@ -670,6 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const observacaoEndereco = obterObservacaoEndereco();
+        // A observacao ajuda o administrador quando o endereco foi alterado em relacao ao retorno do CNPJ.
         if (observacaoEndereco) dados.observacao_endereco = observacaoEndereco;
 
         try {
