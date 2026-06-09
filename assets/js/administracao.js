@@ -20,9 +20,7 @@ function validarAcessoAdmin() {
     
     // Essa verificacao melhora a experiencia no front, mas o back-end tambem valida o token de admin.
     if (!logado || logado.tipo !== 'administrador') {
-        if (window.mostrarAvisoGlobal) {
-            window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
-        }
+        window.alert("Acesso Negado, Essa área é restrita.");
         window.location.href = "../index.html";
     }
 }
