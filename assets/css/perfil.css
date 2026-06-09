@@ -1,4 +1,6 @@
-﻿.perfil-container {
+/* Estilos da pagina de perfil. As classes aqui recebem dados e estados controlados pelo perfil.js. */
+
+.perfil-container {
             min-height: 100vh;
             display: flex;
             align-items: center;

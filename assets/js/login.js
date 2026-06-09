@@ -8,18 +8,17 @@
 
         olhinho('senha');
 
-        // ── detecta tipo enquanto digita ──
+        // O mesmo campo aceita e-mail ou CPF. Enquanto o usuario digita, ajustamos a mascara e a etiqueta.
         identificadorInput.addEventListener('input', () => {
             const v = identificadorInput.value.trim();
             identificadorInput.classList.remove('erro');
             toastErro.classList.remove('visivel');
 
-            // se começa com dígito, trata como CPF e aplica máscara
+            // Quando comeca com numero, tratamos como CPF e deixamos apenas os 11 digitos.
             if (/^\d/.test(v)) {
                 identificadorInput.inputMode = 'numeric';
                 tipoBadge.textContent = 'CPF';
                 tipoBadge.classList.add('visivel');
-                // aplica máscara de CPF diretamente
                 let nums = v.replace(/\D/g, '').slice(0, 11);
                 if (nums.length > 9) nums = nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
                 else if (nums.length > 6) nums = nums.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
@@ -35,6 +34,7 @@
             }
         });
 
+        // Centraliza a mensagem de erro sem usar alert nativo do navegador.
         function mostrarErroGlobal(msg) {
             toastErro.textContent = msg;
             toastErro.classList.add('visivel');
@@ -42,7 +42,7 @@
             senhaInput.classList.add('erro');
         }
 
-        // ── submit ──
+        // Envia o login para o back-end somente depois das validacoes basicas do front.
         document.getElementById('auth-form-login').onsubmit = async (e) => {
             e.preventDefault();
             toastErro.classList.remove('visivel');
@@ -65,7 +65,7 @@
             btnEntrar.disabled = true;
             btnEntrar.innerHTML = '<span class="spinner-btn"></span>Entrando...';
 
-            // detecta se é CPF ou email
+            // Se for CPF, removemos a mascara antes de mandar para a rota /login.
             const ehCPF = /^\d/.test(identificador);
             const payload = ehCPF
                 ? { cpf: identificador.replace(/\D/g, ''), senha }
@@ -81,19 +81,11 @@
                 const resultado = await response.json();
 
                 if (response.ok) {
-                    sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
+                    // A resposta traz usuario e token. O usuario monta a interface; o token libera rotas protegidas.
+                    window.salvarSessaoDeer(resultado.usuario, resultado.token);
                     window.location.href = '../index.html';
                 } else {
-                    const msg = resultado.error || '';
-                    if (msg.includes('não encontrado') || msg.includes('not found')) {
-                        mostrarErroGlobal('Nenhuma conta encontrada com esses dados.');
-                    } else if (msg.includes('senha') || msg.includes('inválid')) {
-                        mostrarErroGlobal('Senha incorreta. Tente novamente.');
-                        senhaInput.classList.add('erro');
-                        identificadorInput.classList.remove('erro');
-                    } else {
-                        mostrarErroGlobal('E-mail/CPF ou senha incorretos.');
-                    }
+                    mostrarErroGlobal(resultado.error || 'E-mail/CPF ou senha incorretos.');
                 }
             } catch {
                 mostrarErroGlobal('Servidor indisponível. Verifique sua conexão.');

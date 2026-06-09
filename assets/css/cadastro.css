@@ -1,4 +1,6 @@
-﻿body { background: #FAFAFA; }
+/* Estilos exclusivos da tela de cadastro em etapas. O funcionamento do carrossel fica no cadastro.js. */
+
+body { background: #FAFAFA; }
 
         .cadastro-page {
             min-height: 100vh;

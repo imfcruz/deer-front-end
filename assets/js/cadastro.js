@@ -1,6 +1,6 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
 
-        // ── estado do wizard ──
+        // Controla em qual etapa do formulario o usuario esta e guarda estados que influenciam a navegacao.
         let etapaAtual = 1;
         const totalEtapas = 3;
         let enderecoPreenchido = false;
@@ -12,10 +12,11 @@
             'Por último, seu endereço para encontrar instituições perto de você.'
         ];
 
-        // ── helpers ──
+        // Elementos usados por varias funcoes do cadastro.
         const slider   = document.getElementById('form-slider');
         const toastErr = document.getElementById('toast-erro');
 
+        // Move o formulario para a etapa escolhida. O translateX desloca o bloco inteiro como um carrossel.
         function irParaEtapa(n) {
             etapaAtual = n;
             slider.style.transform = `translateX(-${(n - 1) * 33.333}%)`;
@@ -24,6 +25,7 @@
             toastErr.classList.remove('visivel');
         }
 
+        // Atualiza os indicadores superiores: etapas anteriores ficam concluidas e a atual fica ativa.
         function atualizarProgress() {
             for (let i = 1; i <= totalEtapas; i++) {
                 const el = document.getElementById(`step-${i}`);
@@ -33,6 +35,7 @@
             }
         }
 
+        // Mostra erro perto do campo correspondente e aplica uma classe visual no input.
         function mostrarErro(id, msg) {
             const el = document.getElementById(id);
             const input = el.previousElementSibling.tagName === 'INPUT'
@@ -43,11 +46,13 @@
             el.classList.add('visivel');
         }
 
+        // Remove a marcacao de erro quando o usuario volta a digitar.
         function limparErro(inputEl, erroId) {
             inputEl.classList.remove('erro');
             document.getElementById(erroId)?.classList.remove('visivel');
         }
 
+        // Pequeno aviso visual usado para feedbacks de sucesso.
         function mostrarToast(id) {
             const t = document.getElementById(id);
             if (!t) return;
@@ -55,23 +60,24 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
+        // Mensagem usada quando o erro nao pertence a um unico campo.
         function mostrarErroGlobal(msg) {
             toastErr.textContent = msg;
             toastErr.classList.add('visivel');
         }
 
-        // ── máscaras (reutiliza as do script.js) ──
+        // Reaproveita funcoes globais do script.js para CPF, telefone e exibicao da senha.
         mascaraCPF(document.getElementById('cpf'));
         mascaraTelefone(document.getElementById('telefone'));
         olhinho('senha');
 
-        // limpa erros ao digitar
+        // Limpa os erros conforme o usuario corrige os campos.
         ['nome','email','senha','cpf','telefone'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', () => limparErro(el, `erro-${id}`));
         });
 
-        // ── validações ──
+        // Primeira etapa: dados de acesso e nome completo.
         function validarEtapa1() {
             let ok = true;
             const nome  = document.getElementById('nome');
@@ -93,6 +99,7 @@
             return ok;
         }
 
+        // Segunda etapa: documentos e telefone. A validacao aqui e simples e fica mais forte no back-end.
         function validarEtapa2() {
             let ok = true;
             const cpf = document.getElementById('cpf');
@@ -111,6 +118,7 @@
             return ok;
         }
 
+        // Terceira etapa: endereco. O CEP precisa ter sido consultado e o numero e obrigatorio.
         function validarEtapa3() {
             if (!enderecoPreenchido) {
                 mostrarErroGlobal('Informe seu CEP para continuar.');
@@ -124,7 +132,7 @@
             return true;
         }
 
-        // ── navegação ──
+        // Botoes de avancar e voltar so mudam a etapa quando a etapa atual esta valida.
         document.getElementById('btn-next-1').onclick = () => {
             if (validarEtapa1()) irParaEtapa(2);
         };
@@ -136,7 +144,7 @@
         document.getElementById('btn-back-2').onclick = () => irParaEtapa(1);
         document.getElementById('btn-back-3').onclick = () => irParaEtapa(2);
 
-        // ── CEP ──
+        // Consulta o CEP pela BrasilAPI. Quando encontra, preenche rua, bairro, cidade e estado automaticamente.
         const cepInput = document.getElementById('cep');
         const camposEnd = document.getElementById('campos-endereco');
 
@@ -155,7 +163,7 @@
                     document.getElementById('cidade').value = d.city || '';
                     document.getElementById('estado').value = d.state || '';
 
-                    // bloqueia campos automaticamente
+                    // Por padrao, os campos vindos da API ficam bloqueados para evitar alteracao sem necessidade.
                     ['rua','bairro','cidade','estado'].forEach(id => {
                         document.getElementById(id).disabled = !camposEditaveis;
                     });
@@ -174,7 +182,7 @@
             }
         });
 
-        // ── corrigir endereço ──
+        // Se a API retornar algo errado, o usuario pode liberar os campos para correcao manual.
         document.getElementById('btn-corrigir').onclick = () => {
             camposEditaveis = true;
             ['rua','bairro','cidade','estado'].forEach(id => {
@@ -183,7 +191,7 @@
             document.getElementById('btn-corrigir').style.display = 'none';
         };
 
-        // ── submit ──
+        // Envia o cadastro completo para o back-end. Se der certo, salva a sessao e manda para a home.
         document.getElementById('btn-submit').onclick = async () => {
             if (!validarEtapa3()) return;
 
@@ -218,11 +226,13 @@
                 if (response.ok) {
                     mostrarToast('pop-up-sucesso');
                     setTimeout(() => {
-                        sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.data[0]));
+                        // O cadastro ja retorna o usuario criado e o token, entao o usuario entra automaticamente.
+                        window.salvarSessaoDeer(resultado.data[0], resultado.token);
                         window.location.href = '../index.html';
                     }, 2000);
                 } else {
                     const msg = resultado.error || '';
+                    // Esses testes ajudam a voltar para a etapa correta quando o back informa duplicidade.
                     if (msg.includes('email') || msg.includes('duplicate') || msg.includes('unique')) {
                         irParaEtapa(1);
                         mostrarErro('erro-email', 'Este e-mail já está cadastrado.');

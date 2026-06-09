@@ -35,6 +35,3 @@ A DEER e uma plataforma academica para conectar doadores a instituicoes e projet
 ### Banco de dados
 
 - PostgreSQL via Supabase
-- Antes do deploy, atualize `assets/js/config.js` com a URL publica do back-end.
-- O README deve receber as URLs finais do front-end e do back-end depois do deploy.
-- As policies do Supabase precisam permitir apenas as operacoes esperadas para cada tabela e bucket.

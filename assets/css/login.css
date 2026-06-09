@@ -1,4 +1,6 @@
-﻿body { background: #FAFAFA; }
+/* Estilos exclusivos da tela de login. A logica de e-mail/CPF e envio ao back fica no login.js. */
+
+body { background: #FAFAFA; }
 
         .login-page {
             min-height: 100vh;

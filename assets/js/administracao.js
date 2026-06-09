@@ -1,59 +1,63 @@
 document.addEventListener('DOMContentLoaded', () => {
-    //verifica se o usuario é um administrador
+    // Antes de mostrar dados sensiveis, conferimos se a sessao local indica perfil administrador.
     validarAcessoAdmin();
-    // Carrega a lista assim que a página abre
+    // Se passou pela verificacao, buscamos no back-end os pedidos que ainda precisam de analise.
     carregarONGsPendentes();
 });
+
+// Protege textos vindos do banco antes de colocar dentro de HTML montado pelo JavaScript.
+function textoSeguro(valor = '') {
+    return String(valor || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 function validarAcessoAdmin() {
     const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
     
-    // Verifica se existe alguém logado e se o tipo é administrador
+    // Essa verificacao melhora a experiencia no front, mas o back-end tambem valida o token de admin.
     if (!logado || logado.tipo !== 'administrador') {
         window.alert("Acesso Negado, Essa área é restrita.");
         window.location.href = "../index.html";
     }
 }
 
-//CARREGAMENTO DA TABELA
+// Monta a tabela de solicitacoes pendentes. A rota exige token, por isso usamos deerAuthHeaders.
 async function carregarONGsPendentes() {
     try {
-        //Pega a etiqueta (crachá) do Administrador
-        const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
-        const tipoDoUsuario = logado ? logado.tipo : '';
-
-        // Pede para o Back-end a lista de ONGs enviando a etiqueta de segurança
         const response = await fetch(window.deerApi('/admin/instituicoes-pendentes'), {
             method: 'GET',
-            headers: {
-                'tipo-usuario': tipoDoUsuario
-            }
+            headers: window.deerAuthHeaders()
         });
         
         const dados = await response.json();
+        const lista = Array.isArray(dados) ? dados : [];
         
-        // Salva a lista globalmente para os modais conseguirem ler os dados depois
-        window.listaDeONGs = dados;
+        // Guardamos a lista em memoria para abrir modais sem precisar consultar o back novamente.
+        window.listaDeONGs = lista;
 
         const tbody = document.querySelector('.admin-table tbody');
-        tbody.innerHTML = ''; // Limpa a tabela
+        tbody.innerHTML = '';
 
-        if (dados.length === 0 || !response.ok) { 
+        if (!response.ok || lista.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5">Nenhuma solicitação pendente ou acesso negado.</td></tr>';
             return;
         }
 
-        //Desenha a tabela com os dados reais
-        dados.forEach(instituicao => {
+        // Cada linha mostra uma solicitacao e deixa os botoes de aprovar/recusar prontos para uso.
+        lista.forEach(instituicao => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="align-middle">
                     <a href="" onclick="abrirModalDetalhes(${instituicao.id}); return false;" style="color: var(--red-base); font-weight: 600; text-decoration: none;">
-                        ${instituicao.nome_publico || instituicao.razao_social}
+                        ${textoSeguro(instituicao.nome_publico || instituicao.razao_social)}
                     </a>
                 </td>
-                <td class="align-middle">${instituicao.cnpj}</td>
-                <td class="align-middle">${instituicao.status}</td>
+                <td class="align-middle">${textoSeguro(instituicao.cnpj)}</td>
+                <td class="align-middle">${textoSeguro(instituicao.status)}</td>
                 <td class="align-middle">
                     <button type="button" class="btn btn-sm btn-success" title="Aceitar Instituição" onclick="prepararConfirmacao(${instituicao.id}, 'aprovar')">
                         <img src="../assets/img/check.png" style="width: 24px;">
@@ -72,7 +76,7 @@ async function carregarONGsPendentes() {
     }
 }
 
-// 2. MODAL DE DETALHES DA ONG
+// Abre os detalhes da instituicao selecionada usando os dados que ja estao em window.listaDeONGs.
 window.abrirModalDetalhes = function(id) {
     const ong = window.listaDeONGs.find(item => item.id === id);
     if (!ong) return;
@@ -87,13 +91,15 @@ window.abrirModalDetalhes = function(id) {
     document.getElementById('modal-detalhes-ong').classList.add('ativo');
 };
 
+// Fecha apenas o modal de detalhes, sem alterar a solicitacao no banco.
 window.fecharModalDetalhes = function() {
     document.getElementById('modal-detalhes-ong').classList.remove('ativo');
 };
 
-// 3. MODAL DE CONFIRMAÇÃO (APROVAR/RECUSAR)
+// Guarda qual acao o administrador escolheu antes de confirmar no modal.
 let acaoPendente = null;
 
+// Prepara a confirmacao visual. A mudanca real so acontece quando executarAcaoPendente roda.
 window.prepararConfirmacao = function(id, tipoAcao) {
     const ong = window.listaDeONGs.find(item => item.id === id);
     if (!ong) return;
@@ -109,7 +115,7 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     if (tipoAcao === 'aprovar') {
         titulo.textContent = 'Aprovar Instituição';
         titulo.style.color = '#2E7D32'; 
-        texto.innerHTML = `Tem certeza que deseja <strong>APROVAR</strong> a instituição <strong>${nomeOng}</strong>?<br>Ela passará a aparecer imediatamente na página de doações.`;
+        texto.innerHTML = `Tem certeza que deseja <strong>APROVAR</strong> a instituição <strong>${textoSeguro(nomeOng)}</strong>?<br>Ela passará a aparecer imediatamente na página de doações.`;
         icone.style.background = 'rgba(67, 160, 71, 0.13)';
         icone.style.color = '#2E7D32';
         icone.textContent = '✓';
@@ -118,7 +124,7 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     } else {
         titulo.textContent = 'Recusar Instituição';
         titulo.style.color = 'var(--red-base)'; 
-        texto.innerHTML = `Tem certeza que deseja <strong>RECUSAR</strong> a instituição <strong>${nomeOng}</strong>?<br>Essa solicitação será alterada para rejeitada.`;
+        texto.innerHTML = `Tem certeza que deseja <strong>RECUSAR</strong> a instituição <strong>${textoSeguro(nomeOng)}</strong>?<br>Essa solicitação será alterada para rejeitada.`;
         icone.style.background = 'rgba(229, 57, 53, 0.12)';
         icone.style.color = 'var(--red-base)';
         icone.textContent = '!';
@@ -129,11 +135,13 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     document.getElementById('modal-confirmacao-acao').classList.add('ativo');
 };
 
+// Cancela a acao escolhida e fecha o modal de confirmacao.
 window.fecharModalConfirmacao = function() {
     document.getElementById('modal-confirmacao-acao').classList.remove('ativo');
     acaoPendente = null;
 };
 
+// Envia a aprovacao ou recusa para o back-end. Depois disso a tabela e recarregada.
 window.executarAcaoPendente = async function() {
     if (!acaoPendente) return;
 
@@ -142,26 +150,24 @@ window.executarAcaoPendente = async function() {
     btn.disabled = true;
     btn.textContent = 'Processando...';
 
-    const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
-    const tipoDoUsuario = logado ? logado.tipo : '';
-
     try {
-        await fetch(window.deerApi(`/admin/instituicoes/${acaoPendente.id}/${acaoPendente.tipo}`), { 
+        const response = await fetch(window.deerApi(`/admin/instituicoes/${acaoPendente.id}/${acaoPendente.tipo}`), {
             method: 'PUT',
-            
-            headers: {
-                'Content-Type': 'application/json',
-                'tipo-usuario': tipoDoUsuario
-            }
+            headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' })
         });
+
+        if (!response.ok) throw new Error('Erro ao processar solicitação.');
         
         fecharModalConfirmacao();
-        carregarONGsPendentes(); // Atualiza a tabela tirando a ONG da lista
+        carregarONGsPendentes();
     } catch (error) {
         console.error('Erro ao processar:', error);
-        alert('Ocorreu um erro ao processar a solicitação.');
+        btn.textContent = 'Erro ao processar';
+        setTimeout(() => {
+            btn.textContent = textoOriginal;
+        }, 1800);
     } finally {
         btn.disabled = false;
-        btn.textContent = textoOriginal;
+        if (btn.textContent !== 'Erro ao processar') btn.textContent = textoOriginal;
     }
 };

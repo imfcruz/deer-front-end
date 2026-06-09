@@ -11,13 +11,34 @@
 </head>
 <body>
 
+    <!-- Cabecalho da pagina interna. O logo volta para a home e o menu pode ser preenchido pela sessao. -->
     <header class="header">
         <div class="header-container">
             <a href="../index.html" class="logo">
                 <div class="logo-mask" title="DEER"></div>
-            </a>
+            </a>   
             <div class="usuario" id="user-menu"></div>
+
+    <!--Botões para aumentar e diminuir o tamanho da fonte (ACESSIBILIDADE)-->
+    <div class="acessibilidade">
+    <button type="button" onclick="aumentarFonte()">A+</button>
+    <button type="button" onclick="diminuirFonte()">A-</button>
+
+    <!--Ïcone/botão para acionar o alto contraste-->
+<button type="button" onclick="alternarContraste()" title="Alto contraste">
+    🌓
+</button>
+  
+<!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
+</button>
+
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
+    
         </div>
+
     </header>
 
     <div class="login-page">
@@ -27,12 +48,12 @@
             <h1 class="login-titulo">Bem-vindo de volta</h1>
             <p class="login-subtitulo">Entre com seu e-mail ou CPF e senha.</p>
 
-            <!-- erro global -->
+            <!-- O login.js escreve aqui mensagens como senha incorreta ou servidor indisponivel. -->
             <div class="toast-erro" id="toast-erro"></div>
 
             <form id="auth-form-login" novalidate>
 
-                <!-- campo unificado email/cpf -->
+                <!-- Campo unificado: o JavaScript detecta se o usuario digitou e-mail ou CPF. -->
                 <div class="input-group">
                     <div class="input-label-row">
                         <label for="identificador">E-mail ou CPF</label>
@@ -47,7 +68,7 @@
                     >
                 </div>
 
-                <!-- senha -->
+                <!-- O botao de mostrar/ocultar senha e criado pelo script.js. -->
                 <div class="input-group">
                     <label for="senha">Senha</label>
                     <input type="password" id="senha" placeholder="Sua senha" autocomplete="current-password">
@@ -76,6 +97,7 @@
         </div>
     </div>
 
+    <!-- config.js vem primeiro para liberar as chamadas ao back-end usadas pelo login.js. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/login.js"></script>

@@ -1,4 +1,4 @@
-// mascara de cpf e telefone e tbm o olhinho de ocultar senha
+// Funcoes reutilizadas em varias telas: formatam dados enquanto o usuario digita.
 function mascaraCPF(input) {
     input.addEventListener('input', () => {
         let v = input.value.replace(/\D/g, '').slice(0, 11);
@@ -9,6 +9,7 @@ function mascaraCPF(input) {
     });
 }
 
+// Deixa o telefone no formato visual usado no Brasil, mas sem mudar o dado final do back-end.
 function mascaraTelefone(input) {
     input.addEventListener('input', () => {
         let v = input.value.replace(/\D/g, '').slice(0, 11);
@@ -19,6 +20,7 @@ function mascaraTelefone(input) {
     });
 }
 
+// Cria o botao de mostrar/ocultar senha ao lado do input recebido.
 function olhinho(inputId) {
     const input = document.getElementById(inputId);
     if (!input) return;
@@ -56,7 +58,7 @@ function olhinho(inputId) {
     wrapper.appendChild(btn);
 }
 
-// aplica as mascaras e o olho assim q a pagina carregar
+// Ao abrir qualquer pagina, aplica automaticamente as mascaras nos campos que existirem nela.
 document.addEventListener('DOMContentLoaded', () => {
     const cpf = document.getElementById('cpf') || document.getElementById('edit-cpf');
     const tel = document.getElementById('telefone') || document.getElementById('edit-telefone');
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDepois = document.getElementById('btn-preencher-depois');
     const secao = document.getElementById('secao-endereco');
 
+    // No cadastro antigo, o usuario escolhia se queria preencher endereco agora ou depois.
     if (btnAdicionar) {
         btnAdicionar.onclick = () => {
             secao.style.display = 'block';
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Modal reutilizável para substituir alert() do navegador por um aviso com o visual da DEER.
+// Modal reutilizavel para substituir alert() do navegador por um aviso com o visual da DEER.
 window.mostrarAvisoGlobal = function(titulo, mensagem, tipo = 'erro') {
     let modal = document.getElementById('modal-aviso-global');
     if (!modal) {
@@ -123,7 +126,7 @@ window.mostrarAvisoGlobal = function(titulo, mensagem, tipo = 'erro') {
     modal.classList.add('ativo');
 };
 
-// logica de cadastro 
+// Suporte ao formulario de cadastro antigo. A versao atual usa cadastro.js, mas mantemos este bloco para compatibilidade.
 const formCadastro = document.getElementById('auth-form-cadastro');
 if (formCadastro) {
     formCadastro.onsubmit = async (e) => {
@@ -159,12 +162,12 @@ if (formCadastro) {
 
             const resultado = await response.json();
 
-            if (response.ok) {
-                const toast = document.getElementById('pop-up-sucesso');
-                if (toast) toast.classList.add("show");
+                if (response.ok) {
+                    const toast = document.getElementById('pop-up-sucesso');
+                    if (toast) toast.classList.add("show");
 
                 setTimeout(() => {
-                    sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.data[0]));
+                    window.salvarSessaoDeer(resultado.data[0], resultado.token);
                     sessionStorage.removeItem('endereco_opcao');
                     window.location.href = "../index.html"; 
                 }, 2000);
@@ -180,7 +183,7 @@ if (formCadastro) {
     };
 }
 
-// logica de login
+// Suporte ao formulario de login antigo. A tela atual usa login.js, mas este bloco evita quebrar paginas antigas.
 const formLogin = document.getElementById('auth-form-login');
 if (formLogin) {
     formLogin.onsubmit = async (e) => {
@@ -199,7 +202,7 @@ if (formLogin) {
             const resultado = await response.json();
 
             if (response.ok) {
-                sessionStorage.setItem('deer_sessao', JSON.stringify(resultado.usuario));
+                window.salvarSessaoDeer(resultado.usuario, resultado.token);
                 const estaNaSubpasta = window.location.pathname.includes('/pages/');
                 
             } else {
@@ -215,12 +218,13 @@ if (formLogin) {
     };
 }
 
-// preenche o menu de usuario no header com as infos da sessao caso tenha
+// Preenche o menu do cabecalho com os dados da sessao salva no navegador.
 document.addEventListener('DOMContentLoaded', () => {
     const menu = document.getElementById('user-menu');
     const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
     
     if (logado && menu) {
+        // Evita manter senha no sessionStorage caso algum cadastro antigo tenha salvo esse campo.
         if (logado.senha) {
             delete logado.senha;
             sessionStorage.setItem('deer_sessao', JSON.stringify(logado));
@@ -231,15 +235,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let miniaturaHtml = '';
         if (logado.perfil_url) {
-            miniaturaHtml = `<img src="${logado.perfil_url}" alt="Foto" class="usuario-foto">`;
+            miniaturaHtml = `<img src="${textoSeguro(logado.perfil_url)}" alt="Foto" class="usuario-foto">`;
         } else {
             const iniciais = logado.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-            miniaturaHtml = `<div class="usuario-iniciais">${iniciais}</div>`;
+            miniaturaHtml = `<div class="usuario-iniciais">${textoSeguro(iniciais)}</div>`;
         }
 
         let botaoInstituicao = '';
         let botaoAdmin = '';
 
+        // Mostra atalhos extras de acordo com o tipo de usuario retornado pelo back-end.
         if (logado.tipo === 'instituicao') {
             const linkInstituicao = estaNaSubpasta ? 'instituicao.html' : 'pages/instituicao.html';
             botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel da ONG</a>`;
@@ -257,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menu.innerHTML = `
             <div class="usuario-identidade">
                 ${miniaturaHtml}
-                <span class="usuario-saudacao">Olá, ${primeiroNome}</span>
+                <span class="usuario-saudacao">Olá, ${textoSeguro(primeiroNome)}</span>
             </div>
             ${botaoInstituicao} 
             ${botaoAdmin} <a href="${linkPerfil}" class="login-trigger usuario-acao">Meu Perfil</a>
@@ -266,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// verifica se existe o parametro de conta excluida na url e avisa o usuario
+// Quando a conta e excluida, a tela de login recebe um parametro na URL e mostra um aviso.
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('conta') === 'excluida') {
@@ -276,18 +281,20 @@ document.addEventListener('DOMContentLoaded', () => {
             border-radius: 8px; padding: 12px 16px; margin-bottom: 15px;
             font-size: 0.88rem; font-weight: 600; text-align: center;
         `;
-        aviso.textContent = '⚠️ Conta excluída. Seus dados não foram encontrados.';
+        aviso.textContent = 'Seus dados foram excluídos com sucesso.';
 
         const form = document.getElementById('auth-form-login');
         if (form) form.insertBefore(aviso, form.firstChild);
     }
 });
 
+// Encerra a sessao local e devolve o usuario para a home.
 window.sair = () => {
-    sessionStorage.removeItem('deer_sessao');
+    window.limparSessaoDeer();
     window.location.href = window.location.pathname.includes('pages') ? "../index.html" : "index.html";
 };
 
+// Mapa unico das categorias usadas na home, filtros, chips dos cards e formulario de instituicao.
 const categoriasDoacao = {
     alimentos: { nome: 'Alimentos', icone: 'diet.png' },
     roupas: { nome: 'Roupas', icone: 'clothes.png' },
@@ -298,11 +305,13 @@ const categoriasDoacao = {
     moveis: { nome: 'Móveis e utensílios', icone: 'dining.png' }
 };
 
+// Ajusta o caminho das imagens porque a home e as paginas internas ficam em pastas diferentes.
 function caminhoIconeCategoria(arquivo) {
     const base = window.location.pathname.includes('/pages/') ? '../assets/img/' : 'assets/img/';
     return `${base}${arquivo}`;
 }
 
+// Monta o icone de categoria dentro dos chips dos cards e filtros.
 function iconeCategoriaHtml(meta) {
     if (!meta || !meta.icone) return '';
     return `<img class="categoria-chip-icone" src="${caminhoIconeCategoria(meta.icone)}" alt="">`;
@@ -330,11 +339,13 @@ function limitarTexto(valor = '', limite = 130) {
     return `${texto.slice(0, limite).trim()}...`;
 }
 
+// Usado quando a instituicao ainda nao possui logo cadastrada.
 function iniciaisInstituicao(instituicao) {
     const nome = instituicao.nome_publico || instituicao.nome_fantasia || instituicao.razao_social || 'Instituição';
     return nome.split(' ').filter(Boolean).slice(0, 2).map(parte => parte[0]).join('').toUpperCase();
 }
 
+// Desenha os cards das instituicoes aprovadas. O mesmo bloco atende a home e a pagina de instituicoes.
 function renderizarCardsOngs(container, instituicoes, limite = null) {
     if (!container) return;
 
@@ -368,7 +379,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
                             }).join('') + (categorias.length > 4 ? `<span style="background: var(--surface-strong); font-weight: 600;">+${categorias.length - 4}</span>` : '')
                             : '<span>Categorias em análise</span>'}
                     </div>
-                    <button type="button" class="btn-card-contribuir" data-recurso-desenvolvimento>Contribuir</button>
+                    <button type="button" class="btn-card-contribuir" data-doar-instituicao data-instituicao-id="${textoSeguro(instituicao.id)}" data-instituicao-nome="${textoSeguro(nome)}">Contribuir</button>
                 </div>
             </article>
         `;
@@ -376,7 +387,7 @@ function renderizarCardsOngs(container, instituicoes, limite = null) {
     aplicarRevealNosElementos(container.querySelectorAll('.ong-card'));
 }
 
-// Efeito leve de entrada ao rolar a página; se o navegador não suportar, o conteúdo aparece normal.
+// Efeito leve de entrada ao rolar a pagina. Se o navegador nao suportar, o conteudo aparece normal.
 function aplicarRevealNosElementos(elementos) {
     const lista = Array.from(elementos || []);
     if (!lista.length) return;
@@ -404,6 +415,7 @@ function aplicarRevealNosElementos(elementos) {
     lista.forEach(el => observer.observe(el));
 }
 
+// Busca apenas instituicoes aprovadas. O back-end ja filtra o que pode aparecer publicamente.
 async function buscarInstituicoesAprovadas() {
     const response = await fetch(window.deerApi('/instituicoes'));
     if (!response.ok) throw new Error('Erro ao buscar instituições.');
@@ -411,18 +423,68 @@ async function buscarInstituicoesAprovadas() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Modal usado nos botões de doação enquanto o fluxo completo ainda está em desenvolvimento.
-    const abrirModalDesenvolvimento = () => {
-        let modal = document.getElementById('modal-recurso-desenvolvimento');
+    // Quando o Mercado Pago redireciona de volta, ele adiciona pagamento=sucesso/falha/pendente na URL.
+    const paramsPagamento = new URLSearchParams(window.location.search);
+    const statusPagamento = paramsPagamento.get('pagamento');
+    if (statusPagamento && window.mostrarAvisoGlobal) {
+        const mensagens = {
+            sucesso: ['Pagamento aprovado', 'Seu pagamento foi aprovado!!!', 'sucesso'],
+            falha: ['Pagamento não concluído', 'Alguma coisa deu errado no seu pagamento...', 'erro'],
+            pendente: ['Pagamento pendente', 'Seu pagamento está pendente...', 'erro']
+        };
+        const [titulo, mensagem, tipo] = mensagens[statusPagamento] || mensagens.pendente;
+        window.mostrarAvisoGlobal(titulo, mensagem, tipo);
+
+        // Depois de mostrar o aviso uma vez, limpamos a URL para o aviso nao voltar em todo reload.
+        paramsPagamento.delete('pagamento');
+        const novaQuery = paramsPagamento.toString();
+        const novaUrl = `${window.location.pathname}${novaQuery ? `?${novaQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, document.title, novaUrl);
+    }
+
+    // Aceita valores como 15, 15,50 ou 15.50 e bloqueia letras ou mais de duas casas decimais.
+    function normalizarValorDoacao(valorDigitado) {
+        const valorLimpo = valorDigitado.trim().replace(',', '.');
+
+        if (!/^\d+(\.\d{1,2})?$/.test(valorLimpo)) {
+            return null;
+        }
+
+        const valor = Number(valorLimpo);
+        return Number.isFinite(valor) ? valor : null;
+    }
+
+    // Evita quebrar o front se o servidor responder HTML em vez de JSON durante algum erro de deploy.
+    async function lerRespostaJson(response) {
+        const texto = await response.text();
+
+        try {
+            return texto ? JSON.parse(texto) : {};
+        } catch {
+            return {
+                error: 'O servidor respondeu em um formato inesperado. Verifique se o back-end está atualizado.'
+            };
+        }
+    }
+
+    // Modal inicial do fluxo de doacao: coleta valor e redireciona para o Checkout Pro do Mercado Pago.
+    const abrirModalDoacao = (instituicaoId, instituicaoNome) => {
+        let modal = document.getElementById('modal-doacao');
         if (!modal) {
             modal = document.createElement('div');
-            modal.id = 'modal-recurso-desenvolvimento';
+            modal.id = 'modal-doacao';
             modal.className = 'modal-desenvolvimento-overlay';
             modal.innerHTML = `
-                <div class="modal-desenvolvimento" role="dialog" aria-modal="true" aria-labelledby="modal-dev-titulo">
-                    <h3 id="modal-dev-titulo">Recurso em desenvolvimento</h3>
-                    <p>O fluxo de doação ainda está sendo trabalhado. Em breve você poderá contribuir diretamente pela plataforma.</p>
-                    <button type="button" class="btn-fechar-modal-dev">Entendi</button>
+                <div class="modal-desenvolvimento" role="dialog" aria-modal="true" aria-labelledby="modal-doacao-titulo">
+                    <h3 id="modal-doacao-titulo">Contribuir com dinheiro</h3>
+                    <p id="modal-doacao-texto">Informe um valor para simular a doação.</p>
+                    <label for="valor-doacao" style="display:block; margin-top: 16px; font-weight: 700;">Valor da doação</label>
+                    <input id="valor-doacao" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex: 25,00" style="width:100%; margin-top:8px; padding:12px 14px; border-radius:10px; border:1px solid var(--field-border); background:var(--input-bg); color:var(--dark-text);">
+                    <span id="erro-doacao" style="display:none; color:var(--red-base); font-weight:700; margin-top:10px; font-size:.86rem;"></span>
+                    <div style="display:flex; gap:12px; margin-top:22px;">
+                        <button type="button" class="btn-fechar-modal-dev" style="flex:1;">Cancelar</button>
+                        <button type="button" id="btn-confirmar-doacao" class="btn-card-contribuir" style="flex:1;">Continuar</button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -434,15 +496,67 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const inputValor = modal.querySelector('#valor-doacao');
+        const erro = modal.querySelector('#erro-doacao');
+        const texto = modal.querySelector('#modal-doacao-texto');
+        const btnConfirmar = modal.querySelector('#btn-confirmar-doacao');
+
+        texto.textContent = `Doação teste para ${instituicaoNome}.`;
+        inputValor.value = '';
+        erro.style.display = 'none';
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = 'Continuar';
+
+        btnConfirmar.onclick = async () => {
+            const valor = normalizarValorDoacao(inputValor.value);
+            erro.style.display = 'none';
+
+            if (!Number.isFinite(valor) || valor < 1) {
+                erro.textContent = 'Informe um valor válido a partir de R$ 1,00, usando no máximo duas casas decimais.';
+                erro.style.display = 'block';
+                return;
+            }
+
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = 'Indo pro pagamento...';
+
+            try {
+                // O front so envia instituicao e valor. O back cria a preferencia usando o token do Mercado Pago.
+                const response = await fetch(window.deerApi('/pagamentos/preferencia'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ instituicao_id: Number(instituicaoId), valor })
+                });
+
+                const resultado = await lerRespostaJson(response);
+
+                if (!response.ok || !resultado.checkout_url) {
+                    throw new Error(resultado.error || 'Erro ao continuar');
+                }
+
+                // A partir daqui o pagamento acontece no ambiente do Mercado Pago.
+                window.location.href = resultado.checkout_url;
+            } catch (error) {
+                erro.textContent = error.message || 'Não foi possível continuar para o pagamento.';
+                erro.style.display = 'block';
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Continuar';
+            }
+        };
+
         modal.classList.add('ativo');
+        setTimeout(() => inputValor.focus(), 80);
     };
 
+    // Delegacao de clique: funciona para cards criados depois que os dados chegaram do back-end.
     document.addEventListener('click', (e) => {
-        if (e.target.closest('[data-recurso-desenvolvimento]')) {
-            abrirModalDesenvolvimento();
+        const botaoDoacao = e.target.closest('[data-doar-instituicao]');
+        if (botaoDoacao) {
+            abrirModalDoacao(botaoDoacao.dataset.instituicaoId, botaoDoacao.dataset.instituicaoNome);
         }
     });
 
+    // Cards de categoria da home levam para a pagina de instituicoes ja filtrada.
     document.querySelectorAll('.categoria-card[data-categoria]').forEach(card => {
         card.addEventListener('click', () => {
             window.location.href = caminhoPaginaOngs(card.dataset.categoria);
@@ -458,6 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Carrega instituicoes aprovadas para a home e para a pagina de listagem.
 document.addEventListener('DOMContentLoaded', async () => {
     const homeGrid = document.getElementById('home-ongs-grid');
     const pageGrid = document.getElementById('ongs-grid');
@@ -474,6 +589,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             let categoriaAtual = params.get('categoria') || '';
 
+            // Filtra pelo array categorias_aceitas que vem do banco.
             const aplicarFiltro = (categoria) => {
                 const filtradas = categoria
                 ? instituicoes.filter(instituicao => { 
@@ -491,13 +607,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             document.querySelectorAll('.filtro-ong').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const categoria = btn.dataset.categoria || '';
+                    let categoria = btn.dataset.categoria || '';
                     
                     if (categoriaAtual === categoria) {
                     categoria = ''; 
                     }
                     const url = categoria ? `ongs.html?categoria=${encodeURIComponent(categoria)}` : 'ongs.html';
                     window.history.replaceState({}, '', url);
+                    categoriaAtual = categoria;
                     aplicarFiltro(categoria);
                 });
             });
@@ -512,13 +629,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Aplica a animacao de entrada em secoes estaticas da home.
 document.addEventListener('DOMContentLoaded', () => {
     aplicarRevealNosElementos(document.querySelectorAll(
         '.como-funciona .passo, .categorias .categoria-card, .beneficios-deer .beneficio-card, .sobre-nos .sobre-texto'
     ));
 });
 
-// cep
+// Consulta CEP pela BrasilAPI e preenche campos de endereco quando a API encontra os dados.
 async function buscarCEP(cep, prefixo = '') {
     const cepLimpo = cep.replace(/\D/g, '');
     if (cepLimpo.length !== 8) return;
@@ -544,6 +662,7 @@ async function buscarCEP(cep, prefixo = '') {
     } catch { habilitarCampos(prefixo); }
 }
 
+// Se a BrasilAPI falhar, liberamos os campos para preenchimento manual.
 function habilitarCampos(prefixo = '') {
     ['rua', 'bairro', 'cidade', 'estado'].forEach(id => {
         const el = document.getElementById(prefixo + id);
@@ -551,6 +670,7 @@ function habilitarCampos(prefixo = '') {
     });
 }
 
+// Mascara visual do CEP e chamada automatica da consulta quando chega a 8 digitos.
 function mascaraCEP(input, prefixo = '') {
     input.addEventListener('input', async () => {
         let v = input.value.replace(/\D/g, '').slice(0, 8);
@@ -560,7 +680,7 @@ function mascaraCEP(input, prefixo = '') {
     });
 }
 
-
+// Definicao das cores dos temas. Alterar aqui reflete em todas as paginas que usam as variaveis CSS.
 const temasPlataforma = {
     claro: {
         pageBg: '#FAFAFA',
@@ -598,7 +718,7 @@ const temasPlataforma = {
     }
 };
 
-// Centraliza a aplicação do tema para todas as páginas usarem as mesmas variáveis CSS.
+// Centraliza a aplicacao do tema para todas as paginas usarem as mesmas variaveis CSS.
 window.aplicarTemaPlataforma = function(tema = 'claro') {
     const nomeTema = tema === 'escuro' ? 'escuro' : 'claro';
     const config = temasPlataforma[nomeTema];
@@ -629,6 +749,7 @@ window.aplicarTemaPlataforma = function(tema = 'claro') {
     } catch {}
 };
 
+// Ao abrir a pagina, escolhe o tema salvo no usuario ou no navegador.
 document.addEventListener('DOMContentLoaded', () => {
     const sessaoAtual = JSON.parse(sessionStorage.getItem('deer_sessao'));
     let temaSalvo = 'claro';
@@ -643,3 +764,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.aplicarTemaPlataforma(temaSalvo);
 });
+
+//Botões para aumentar e diminuir a fonte (Acessibilidade)
+let tamanhoFonte = 16;
+function aumentarFonte(){
+    tamanhoFonte += 2;
+    document.body.style.fontSize = tamanhoFonte + 'px';
+    localStorage.setItem('fonte', tamanhoFonte);//mantém a configuração de tamanho escolhida pelo usuário salva e permite navegar para as outras páginas com a configuração salva
+}
+function diminuirFonte(){
+    tamanhoFonte -= 2;
+    document.body.style.fontSize = tamanhoFonte + 'px';
+    localStorage.setItem('fonte', tamanhoFonte);//idem (fica tudo no armazenamento local (localStorage))
+}
+// botão/ícone alto contraste
+function alternarContraste() {
+    document.body.classList.toggle('alto-contraste');
+
+    const ativo = document.body.classList.contains('alto-contraste');
+    localStorage.setItem('altoContraste', ativo);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const contrasteSalvo = localStorage.getItem('altoContraste');
+
+    if (contrasteSalvo === 'true') {
+        document.body.classList.add('alto-contraste');
+    }
+});
+
+//Botão/ícone speech
+//ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para
+let lendo = false;
+
+function alternarLeitura() {
+    const btn = document.getElementById('btnAudio');
+
+    if (!lendo) {
+        const fala = new SpeechSynthesisUtterance(document.body.innerText);
+        fala.lang = 'pt-BR';
+
+        speechSynthesis.speak(fala);
+
+        btn.textContent = '🔇';
+        lendo = true;
+    } else {
+        speechSynthesis.cancel();
+
+        btn.textContent = '🔊';
+        lendo = false;
+    }
+}

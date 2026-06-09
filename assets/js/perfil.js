@@ -2,24 +2,20 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const sessao = JSON.parse(sessionStorage.getItem('deer_sessao'));
-    if (!sessao) { window.location.href = '../pages/login.html'; return; }
+   const sessao = JSON.parse(sessionStorage.getItem('deer_sessao'));
+   if (!sessao) { window.location.href = '../pages/login.html'; return; }
     if (sessao.senha) {
         delete sessao.senha;
         sessionStorage.setItem('deer_sessao', JSON.stringify(sessao));
     }
 
-    // Usado apenas para upload de foto no Storage. A chave anon depende das policies do Supabase.
-    const SUPABASE_URL = 'https://uqcufnmysnxvmhgyphks.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxY3Vmbm15c254dm1oZ3lwaGtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4ODIyNjQsImV4cCI6MjA5MTQ1ODI2NH0.v7UhfK1-TzP0c0mqC0ae9_Vh0ig1w5I-ZVoiMFtfusU';
-
-    // essas variaveis são usadas em varias partes do codigo, então foram definidas aqui
+    // Esses elementos aparecem em varios pontos do arquivo, por isso ficam separados no inicio.
     const inputHex = document.getElementById('input-hex');
     const headerEl = document.getElementById('perfil-header');
     const painel = document.getElementById('banner-color-panel');
     const btnEditarBanner = document.getElementById('btn-editar-banner');
 
-    // helpers
+    // Mostra feedbacks pequenos quando alguma acao termina com sucesso ou erro.
     function mostrarToast(id) {
         const toast = document.getElementById(id);
         if (!toast) return;
@@ -27,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
+    // Usa o modal global quando ele existe. Se a pagina nao tiver carregado o script global, cai no toast antigo.
     function mostrarAviso(titulo, mensagem, tipo = 'erro') {
         if (window.mostrarAvisoGlobal) {
             window.mostrarAvisoGlobal(titulo, mensagem, tipo);
@@ -39,6 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Protege textos antes de colocar dentro de innerHTML. Isso evita que dados vindos do banco virem HTML executavel.
+    function textoSeguro(valor = '') {
+        return String(valor || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Calcula se uma cor e clara para ajustar contraste do texto e dos botoes do banner.
     function corEhClara(cor) {
         const hex = cor.replace('#', '');
         const r = parseInt(hex.slice(0, 2), 16);
@@ -48,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return luminosidade > 180;
     }
 
+    // Aplica a cor escolhida no banner e ajusta automaticamente contraste, bordas e estados visuais.
     function aplicarCorBanner(cor) {
         if (!/^#[0-9A-Fa-f]{6}$/.test(cor)) return;
         const corNormalizada = cor.toUpperCase();
@@ -69,30 +78,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // CPF fica travado no perfil porque e um dado de identificacao do cadastro.
     function forcarCpfDesabilitado() {
         const cpf = document.getElementById('edit-cpf');
         if (cpf) cpf.disabled = true;
     }
 
-    // preenche os dados do perfil com as infos de sessao
-    // Atualiza a tela com os dados mais recentes do usuário.
+    // Atualiza a tela com os dados mais recentes do usuario, vindos da sessao ou do back-end.
     function preencherPerfil(usuario) {
         const avatar = document.getElementById('perfil-avatar');
         const iniciais = usuario.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
         if (usuario.perfil_url) {
-            avatar.innerHTML = `<img src="${usuario.perfil_url}" alt="Foto de perfil" class="perfil-avatar-img">`;
+            avatar.innerHTML = `<img src="${textoSeguro(usuario.perfil_url)}" alt="Foto de perfil" class="perfil-avatar-img">`;
         } else {
-            avatar.innerHTML = `<span>${iniciais}</span>`;
+            avatar.innerHTML = `<span>${textoSeguro(iniciais)}</span>`;
         }
 
-        // texto do overlay muda conforme tem foto ou não
+        // Texto do overlay muda conforme tem foto ou nao.
         const overlaySpan = avatar.parentElement.querySelector('.avatar-overlay span');
         if (overlaySpan) {
             overlaySpan.innerHTML = usuario.perfil_url ? '📷<br>Alterar foto' : '📷<br>Adicionar foto';
         }
 
-        // banner
+        // A cor do banner vem do perfil e nao altera mais o tema inteiro da plataforma.
         if (usuario.banner_cor) {
             aplicarCorBanner(usuario.banner_cor);
         }
@@ -114,12 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     preencherPerfil(sessao);
     olhinho('edit-senha');
+    // O campo de nova senha deve comecar vazio mesmo se o navegador tentar preencher automaticamente.
     setTimeout(() => {
         const senhaPerfil = document.getElementById('edit-senha');
         if (senhaPerfil && document.activeElement !== senhaPerfil) senhaPerfil.value = '';
     }, 250);
     setTimeout(() => headerEl.style.transition = 'background 0.4s ease', 100);
 
+    // Marca visualmente qual opcao de tema esta ativa.
     function marcarTemaAtivo(tema) {
         document.querySelectorAll('.tema-opcao').forEach(btn => {
             btn.classList.toggle('ativo', btn.dataset.tema === tema);
@@ -132,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
     marcarTemaAtivo(temaAtual);
 
-    // O tema é salvo no banco para continuar igual depois de logout/login.
+    // O tema e salvo no banco para continuar igual depois de logout/login.
     document.querySelectorAll('.tema-opcao').forEach(btn => {
         btn.addEventListener('click', async () => {
             const tema = btn.dataset.tema;
@@ -142,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ tema_preferido: tema })
                 });
 
@@ -158,13 +169,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mostra o resumo da instituição vinculada, quando o usuário já enviou uma solicitação.
+    // Mostra o resumo da instituicao vinculada, quando o usuario ja enviou uma solicitacao.
     async function carregarInstituicaoVinculada() {
         const box = document.getElementById('instituicao-box');
         if (!box) return;
 
         try {
-            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`));
+            const response = await fetch(window.deerApi(`/instituicoes/usuario/${sessao.id}`), {
+                headers: window.deerAuthHeaders()
+            });
             const resultado = await response.json();
 
             if (!response.ok) throw new Error(resultado.error || 'Erro ao buscar instituição.');
@@ -180,8 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }[status] || status;
 
             box.innerHTML = `
-                <span class="instituicao-status ${status}">${textoStatus}</span>
-                <h4>${instituicao.nome_publico || instituicao.razao_social || 'Instituição vinculada'}</h4>
+                <span class="instituicao-status ${textoSeguro(status)}">${textoSeguro(textoStatus)}</span>
+                <h4>${textoSeguro(instituicao.nome_publico || instituicao.razao_social || 'Instituição vinculada')}</h4>
                 <p>${status === 'aprovada'
                     ? 'Sua instituição já foi aprovada e poderá aparecer na página de instituições.'
                     : status === 'rejeitada'
@@ -196,12 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarInstituicaoVinculada();
 
-    // contador de caracteres da biografia 
+    // Atualiza o contador da biografia enquanto o usuario digita.
     document.getElementById('edit-biografia').addEventListener('input', function () {
         document.getElementById('contador-bio').textContent = this.value.length;
     });
 
-    // salvar as alterações do perfil
+    // Envia as alteracoes do perfil para o back-end. O token prova que o usuario esta alterando a propria conta.
     document.getElementById('form-perfil').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btn-salvar');
@@ -215,7 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
             biografia: document.getElementById('edit-biografia').value,
         };
 
-        const corBanner = inputHex.value.trim();
+        const corBanner = inputHex.value.trim() || sessao.banner_cor || '#E53935'; // coloca a cor padrao se o campo estiver vazio pra evitar salvar sem cor.
+        // O back-end tambem valida a cor, mas barramos aqui para dar retorno rapido ao usuario.
         if (!/^#[0-9A-Fa-f]{6}$/.test(corBanner)) {
             btn.disabled = false;
             btn.textContent = 'Salvar Alterações';
@@ -226,12 +240,13 @@ document.addEventListener('DOMContentLoaded', () => {
         dadosAtualizados.banner_cor = corBanner;
 
         const novaSenha = document.getElementById('edit-senha').value;
+        // Senha em branco significa manter a senha atual.
         if (novaSenha.trim() !== '') dadosAtualizados.senha = novaSenha;
 
         try {
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(dadosAtualizados)
             });
 
@@ -252,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // upload de foto de perfil
+    // Abre o seletor de arquivo quando o usuario clica no avatar.
     document.getElementById('avatar-wrapper').onclick = () => {
         document.getElementById('input-foto').click();
     };
@@ -275,18 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loading.classList.add('ativo');
 
         try {
-            const extensao = arquivo.name.split('.').pop();
-            const caminhoArquivo = `avatares/${sessao.id}.${extensao}`;
-
+            // O arquivo vai para o back-end, que envia ao Supabase Storage. Assim a chave do Supabase nao fica no front.
             const respostaUpload = await fetch(
-                `${SUPABASE_URL}/storage/v1/object/imagens/${caminhoArquivo}`,
+                window.deerApi(`/usuarios/${sessao.id}/foto`),
                 {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': arquivo.type,
-                        'x-upsert': 'true',
-                    },
+                    headers: window.deerAuthHeaders({ 'Content-Type': arquivo.type }),
                     body: arquivo
                 }
             );
@@ -297,19 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Falha no upload');
             }
 
-            const urlFoto = `${SUPABASE_URL}/storage/v1/object/public/imagens/${caminhoArquivo}?t=${Date.now()}`;
-
-            const respostaBanco = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ perfil_url: urlFoto })
-            });
-
-            if (!respostaBanco.ok) {
-                const erroTexto = await respostaBanco.text();
-                console.error('Erro ao salvar URL:', erroTexto);
-                throw new Error('Falha ao salvar URL');
-            }
+            const resultado = await respostaUpload.json();
+            const urlFoto = resultado.perfil_url;
 
             Object.assign(sessao, { perfil_url: urlFoto });
             sessionStorage.setItem('deer_sessao', JSON.stringify(sessao));
@@ -325,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // cor do banner e tema do site
+    // Abre e fecha o painel de cor do banner.
     btnEditarBanner.onclick = (e) => {
         e.stopPropagation();
         painel.classList.toggle('aberto');
@@ -352,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // seção de endereço
+    // Mostra o endereco atual em texto simples dentro do perfil.
     function mostrarEnderecoAtual(usuario) {
         const texto = document.getElementById('texto-endereco');
         if (!texto) return;
@@ -366,7 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Recarrega do back-end para evitar usar dados velhos guardados no sessionStorage.
     async function atualizarUsuarioDaSessao() {
         try {
-            const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`));
+            const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
+                headers: window.deerAuthHeaders()
+            });
             const resultado = await response.json();
             if (!response.ok || !resultado.usuario) return;
 
@@ -381,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     atualizarUsuarioDaSessao();
 
+    // Abre o formulario de edicao de endereco ja preenchido com o que existe na sessao.
     document.getElementById('btn-abrir-endereco').onclick = () => {
         document.getElementById('secao-endereco-perfil').style.display = 'block';
         document.getElementById('btn-abrir-endereco').style.display = 'none';
@@ -424,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(enderecoAtualizado)
             });
 
@@ -443,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Exclusão em duas etapas: primeiro confirma a senha, depois exige aceite do aviso permanente.
+    // Exclusao em duas etapas: primeiro confirma a senha, depois exige aceite do aviso permanente.
     const modalExclusao = document.getElementById('modal-exclusao');
     const etapaSenhaExclusao = document.getElementById('etapa-senha-exclusao');
     const etapaConfirmarExclusao = document.getElementById('etapa-confirmar-exclusao');
@@ -455,11 +456,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let senhaConfirmadaExclusao = '';
 
+    // Alterna entre a etapa de senha e a etapa final de confirmacao.
     function mostrarEtapaExclusao(etapa) {
         etapaSenhaExclusao.classList.toggle('ativo', etapa === 'senha');
         etapaConfirmarExclusao.classList.toggle('ativo', etapa === 'confirmacao');
     }
 
+    // Sempre que o modal abre ou fecha, limpamos dados antigos para nao reaproveitar senha anterior.
     function limparModalExclusao() {
         senhaConfirmadaExclusao = '';
         inputSenhaExclusao.value = '';
@@ -474,11 +477,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarEtapaExclusao('senha');
     }
 
+    // Fecha o modal e volta ao estado inicial.
     function fecharModalExclusao() {
         modalExclusao.classList.remove('ativo');
         limparModalExclusao();
     }
 
+    // Mensagem especifica para erro de senha na exclusao.
     function mostrarErroSenhaExclusao(msg) {
         inputSenhaExclusao.classList.add('erro');
         erroSenhaExclusao.textContent = msg;
@@ -533,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnValidarSenhaExclusao.textContent = 'Validando...';
 
         try {
+            // Reutiliza a rota de login para confirmar se a senha digitada pertence ao usuario atual.
             const payload = sessao.cpf
                 ? { cpf: String(sessao.cpf).replace(/\D/g, ''), senha: senhaDigitada }
                 : { email: sessao.email, senha: senhaDigitada };
@@ -564,14 +570,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btnConfirmarExclusao.textContent = 'Excluindo...';
 
         try {
+            // A exclusao real fica no back-end e exige token mais a senha confirmada.
             const response = await fetch(window.deerApi(`/usuarios/${sessao.id}`), {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: window.deerAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ senha: senhaConfirmadaExclusao })
             });
 
             if (response.ok) {
-                sessionStorage.removeItem('deer_sessao');
+                window.limparSessaoDeer();
                 window.location.href = '../pages/login.html?conta=excluida';
             } else {
                 const resultado = await response.json().catch(() => ({}));

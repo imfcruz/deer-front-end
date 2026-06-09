@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../assets/css/cadastro-ong.css">
 </head>
 <body>
+    <!-- Cabecalho padrao das paginas internas. -->
     <header class="header">
         <div class="header-container">
             <a href="../index.html" class="logo">
@@ -17,6 +18,26 @@
             </a>
             <div class="usuario" id="user-menu"></div>
         </div>
+    <!--Botões para aumentar e diminuir o tamanho da fonte (ACESSIBILIDADE)-->
+    <div class="acessibilidade">
+    <button type="button" onclick="aumentarFonte()">A+</button>
+    <button type="button" onclick="diminuirFonte()">A-</button>
+
+   <!--Ïcone/botão para acionar o alto contraste-->
+<button type="button" onclick="alternarContraste()" title="Alto contraste">
+    🌓
+</button>
+  
+<!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
+</button>
+
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
+
+</div>
+
     </header>
 
     <main class="instituicao-page">
@@ -28,6 +49,7 @@
                     <p>Cadastre os dados oficiais da instituição. A solicitação ficará em análise antes de aparecer publicamente. Informe sempre os dados reais e atualizados.</p>
                 </div>
 
+                <!-- Progresso controlado pelo instituicoes.js conforme o usuario avanca no cadastro. -->
                 <div class="progress-ong">
                     <div class="progress-ong-step ativo" id="ong-step-1"><span>1</span>CNPJ</div>
                     <div class="progress-ong-step" id="ong-step-2"><span>2</span>Endereço</div>
@@ -37,8 +59,9 @@
                 <div class="instituicao-form-area">
                     <div class="toast-ong" id="toast-ong"></div>
 
-                    <!-- Formulário em etapas: CNPJ oficial, endereço e perfil público da instituição. -->
+                    <!-- Formulario em etapas: CNPJ oficial, endereco e perfil publico da instituicao. -->
                     <form id="form-instituicao" novalidate>
+                        <!-- Etapa 1: consulta o CNPJ na BrasilAPI e preenche dados oficiais bloqueados. -->
                         <section class="form-etapa-ong ativo" id="ong-etapa-1">
                             <div class="form-grid">
                                 <div class="input-group full">
@@ -76,6 +99,7 @@
                             </div>
                         </section>
 
+                        <!-- Etapa 2: endereco vindo do CNPJ, com opcao de correcao manual. -->
                         <section class="form-etapa-ong" id="ong-etapa-2">
                             <div class="form-grid">
                                 <div class="input-group">
@@ -124,6 +148,7 @@
                             </div>
                         </section>
 
+                        <!-- Etapa 3: dados que formam o perfil publico e informacoes internas de Pix. -->
                         <section class="form-etapa-ong" id="ong-etapa-3">
                             <div class="form-grid">
                                 <div class="input-group full">
@@ -186,6 +211,7 @@
 
     <div id="pop-up-sucesso" class="pop-up">✓ Instituição enviada para análise!</div>
 
+    <!-- Modal usado quando o usuario decide cancelar uma solicitacao pendente. -->
     <div class="modal-ong-overlay" id="modal-cancelar-solicitacao" aria-hidden="true">
         <div class="modal-ong" role="dialog" aria-modal="true" aria-labelledby="modal-cancelar-titulo">
             <h3 id="modal-cancelar-titulo">Cancelar solicitação?</h3>
@@ -197,8 +223,10 @@
         </div>
     </div>
 
+    <!-- config.js prepara as rotas do back, script.js traz funcoes globais e instituicoes.js controla o fluxo. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/instituicoes.js"></script>
+    
 </body>
 </html>
