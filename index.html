@@ -24,8 +24,31 @@
             <div class="usuario" id="user-menu">
                 <a href="pages/login.html" class="login-trigger">Entrar</a>
                 <a href="pages/cadastro.html" class="signup-trigger">Criar Conta</a>
+
+                
+    <!--Botões para aumentar e diminuir o tamanho da fonte (ACESSIBILIDADE)-->
+    <div class="acessibilidade">
+    <button type="button" onclick="aumentarFonte()">A+</button>
+    <button type="button" onclick="diminuirFonte()">A-</button>
+
+    <!--Ïcone/botão para acionar o alto contraste-->
+<button type="button" onclick="alternarContraste()" title="Alto contraste">
+    🌓
+</button>
+  
+<!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
+</button>
+
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
+ 
+
             </div>
         </div>
+
     </header>
 
     <!-- Primeira dobra da home, com chamadas que levam para as instituicoes carregadas pelo JavaScript. -->
@@ -42,7 +65,9 @@
                 <button class="doar" type="button" data-scroll-ongs>Quero Doar</button>
                 <button class="conhecer-ongs" type="button" data-ver-ongs>Conhecer causas</button>
             </div>
+            
         </section>
+        
     </main>
 
     <!-- Explica a jornada do usuario em tres passos simples. -->
