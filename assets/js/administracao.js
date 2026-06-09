@@ -10,7 +10,7 @@ function validarAcessoAdmin() {
     
     // Verifica se existe alguém logado e se o tipo é administrador
     if (!logado || logado.tipo !== 'administrador') {
-        window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
+        window.alert("Acesso Negado, Essa área é restrita.");
         window.location.href = "../index.html";
     }
 }
