@@ -2,8 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const sessao = JSON.parse(sessionStorage.getItem('deer_sessao'));
-    if (!sessao) { window.location.href = '../pages/login.html'; return; }
+   const sessao = JSON.parse(sessionStorage.getItem('deer_sessao'));
+   if (!sessao) { window.location.href = '../pages/login.html'; return; }
     if (sessao.senha) {
         delete sessao.senha;
         sessionStorage.setItem('deer_sessao', JSON.stringify(sessao));

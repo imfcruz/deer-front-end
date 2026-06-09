@@ -10,8 +10,36 @@
     <link rel="stylesheet" href="../assets/css/perfil.css">
 </head>
 <body>
+<header>
+       <div class="header-container">
+            <div class="logo">
+                <div class="logo-mask" title="DEER"></div>
+            </div>
+            <div class="usuario" id="user-menu">
+               
+    <!--Botões para aumentar e diminuir o tamanho da fonte (ACESSIBILIDADE)-->
+    <div class="acessibilidade">
+    <button type="button" onclick="aumentarFonte()">A+</button>
+    <button type="button" onclick="diminuirFonte()">A-</button>
 
+<<<<<<< HEAD
     <!-- Estrutura principal do perfil. O perfil.js preenche praticamente todos os dados a partir da sessao e do back-end. -->
+=======
+   <!--Ïcone/botão para acionar o alto contraste-->
+<button type="button" onclick="alternarContraste()" title="Alto contraste">
+    🌓
+</button>
+  
+<!--botão para leitura em voz alta //ao pressionar o botão o texto é traduzido em áudio, ao clicar novamente, a tradução para-->
+<button id="btnAudio" onclick="alternarLeitura()">
+    🔊
+</button>
+
+<button onclick="speechSynthesis.pause()">⏸</button> <!--Botao para pausar o áudio-->
+<button onclick="speechSynthesis.resume()">▶</button> <!--Botao para continuar o áudio-->
+</div>
+</header>
+>>>>>>> 3d271a426f303aec988243b68e4f13c8805c3157
     <div class="perfil-container">
         <div>
             <div class="perfil-card">
@@ -238,5 +266,6 @@
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/perfil.js"></script>
+
 </body>
 </html>
