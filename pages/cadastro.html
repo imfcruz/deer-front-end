@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    <!-- Cabecalho simples da pagina interna. O user-menu pode ser preenchido pelo script global se houver sessao. -->
     <header class="header">
         <div class="header-container">
             <a href="../index.html" class="logo">
@@ -23,14 +24,14 @@
     <div class="cadastro-page">
         <div class="cadastro-card">
 
-            <!-- topo -->
+            <!-- Topo do card. O subtitulo muda conforme o usuario avanca nas etapas. -->
             <div class="cadastro-topo">
                 <div class="cadastro-logo"></div>
                 <h1 class="cadastro-titulo">Criar conta</h1>
                 <p class="cadastro-subtitulo" id="subtitulo-etapa">Comece com seus dados básicos de acesso.</p>
             </div>
 
-            <!-- barra de progresso -->
+            <!-- Barra visual controlada pelo cadastro.js para indicar etapa atual e etapas concluidas. -->
             <div class="progress-bar-wrapper">
                 <div class="progress-steps">
                     <div class="progress-step ativo" id="step-1">
@@ -48,13 +49,13 @@
                 </div>
             </div>
 
-            <!-- formulários -->
+            <!-- O form-slider tem tres telas lado a lado; o JavaScript move esse bloco com translateX. -->
             <div class="cadastro-forms">
                 <div class="toast-erro" id="toast-erro"></div>
 
                 <div class="form-slider" id="form-slider">
 
-                    <!-- ETAPA 1: Nome, Email, Senha -->
+                    <!-- Etapa 1: dados basicos de acesso. -->
                     <div class="form-etapa" id="etapa-1">
                         <div class="input-group">
                             <label>Nome Completo</label>
@@ -93,7 +94,7 @@
                         <p class="link-login">Já tem conta? <a href="login.html">Faça Login</a></p>
                     </div>
 
-                    <!-- ETAPA 2: CPF e Telefone -->
+                    <!-- Etapa 2: identificacao do usuario comum. -->
                     <div class="form-etapa" id="etapa-2">
                         <div class="input-group">
                             <label>CPF</label>
@@ -111,7 +112,7 @@
                         </div>
                     </div>
 
-                    <!-- ETAPA 3: Endereço -->
+                    <!-- Etapa 3: endereco consultado por CEP na BrasilAPI. -->
                     <div class="form-etapa" id="etapa-3">
                         <div class="input-group">
                             <label>CEP</label>
@@ -119,7 +120,7 @@
                             <span class="msg-erro" id="erro-cep">CEP não encontrado. Verifique e tente novamente.</span>
                         </div>
 
-                        <!-- campos que aparecem após o CEP ser preenchido -->
+                        <!-- Campos preenchidos automaticamente depois do CEP; podem ser liberados se o endereco estiver errado. -->
                         <div class="campos-endereco" id="campos-endereco">
                             <div class="input-group">
                                 <label>Rua</label>
@@ -166,6 +167,7 @@
 
     <div id="pop-up-sucesso" class="pop-up">✓ Conta criada com sucesso!</div>
 
+    <!-- Ordem importante: config.js cria deerApi, script.js traz funcoes globais e cadastro.js controla este formulario. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/cadastro.js"></script>

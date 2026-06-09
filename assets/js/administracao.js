@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    //verifica se o usuario é um administrador
+    // Antes de mostrar dados sensiveis, conferimos se a sessao local indica perfil administrador.
     validarAcessoAdmin();
-    // Carrega a lista assim que a página abre
+    // Se passou pela verificacao, buscamos no back-end os pedidos que ainda precisam de analise.
     carregarONGsPendentes();
 });
 
+// Protege textos vindos do banco antes de colocar dentro de HTML montado pelo JavaScript.
 function textoSeguro(valor = '') {
     return String(valor || '')
         .replace(/&/g, '&amp;')
@@ -17,7 +18,7 @@ function textoSeguro(valor = '') {
 function validarAcessoAdmin() {
     const logado = JSON.parse(sessionStorage.getItem('deer_sessao'));
     
-    // Verifica se existe alguém logado e se o tipo é administrador
+    // Essa verificacao melhora a experiencia no front, mas o back-end tambem valida o token de admin.
     if (!logado || logado.tipo !== 'administrador') {
         if (window.mostrarAvisoGlobal) {
             window.mostrarAvisoGlobal("Acesso Negado", "Essa área é restrita.");
@@ -26,10 +27,9 @@ function validarAcessoAdmin() {
     }
 }
 
-//CARREGAMENTO DA TABELA
+// Monta a tabela de solicitacoes pendentes. A rota exige token, por isso usamos deerAuthHeaders.
 async function carregarONGsPendentes() {
     try {
-        // Pede para o Back-end a lista de solicitações usando o token salvo no login.
         const response = await fetch(window.deerApi('/admin/instituicoes-pendentes'), {
             method: 'GET',
             headers: window.deerAuthHeaders()
@@ -38,18 +38,18 @@ async function carregarONGsPendentes() {
         const dados = await response.json();
         const lista = Array.isArray(dados) ? dados : [];
         
-        // Salva a lista globalmente para os modais conseguirem ler os dados depois
+        // Guardamos a lista em memoria para abrir modais sem precisar consultar o back novamente.
         window.listaDeONGs = lista;
 
         const tbody = document.querySelector('.admin-table tbody');
-        tbody.innerHTML = ''; // Limpa a tabela
+        tbody.innerHTML = '';
 
         if (!response.ok || lista.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5">Nenhuma solicitação pendente ou acesso negado.</td></tr>';
             return;
         }
 
-        //Desenha a tabela com os dados reais
+        // Cada linha mostra uma solicitacao e deixa os botoes de aprovar/recusar prontos para uso.
         lista.forEach(instituicao => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -78,7 +78,7 @@ async function carregarONGsPendentes() {
     }
 }
 
-// 2. MODAL DE DETALHES DA ONG
+// Abre os detalhes da instituicao selecionada usando os dados que ja estao em window.listaDeONGs.
 window.abrirModalDetalhes = function(id) {
     const ong = window.listaDeONGs.find(item => item.id === id);
     if (!ong) return;
@@ -93,13 +93,15 @@ window.abrirModalDetalhes = function(id) {
     document.getElementById('modal-detalhes-ong').classList.add('ativo');
 };
 
+// Fecha apenas o modal de detalhes, sem alterar a solicitacao no banco.
 window.fecharModalDetalhes = function() {
     document.getElementById('modal-detalhes-ong').classList.remove('ativo');
 };
 
-// 3. MODAL DE CONFIRMAÇÃO (APROVAR/RECUSAR)
+// Guarda qual acao o administrador escolheu antes de confirmar no modal.
 let acaoPendente = null;
 
+// Prepara a confirmacao visual. A mudanca real so acontece quando executarAcaoPendente roda.
 window.prepararConfirmacao = function(id, tipoAcao) {
     const ong = window.listaDeONGs.find(item => item.id === id);
     if (!ong) return;
@@ -135,11 +137,13 @@ window.prepararConfirmacao = function(id, tipoAcao) {
     document.getElementById('modal-confirmacao-acao').classList.add('ativo');
 };
 
+// Cancela a acao escolhida e fecha o modal de confirmacao.
 window.fecharModalConfirmacao = function() {
     document.getElementById('modal-confirmacao-acao').classList.remove('ativo');
     acaoPendente = null;
 };
 
+// Envia a aprovacao ou recusa para o back-end. Depois disso a tabela e recarregada.
 window.executarAcaoPendente = async function() {
     if (!acaoPendente) return;
 
@@ -157,7 +161,7 @@ window.executarAcaoPendente = async function() {
         if (!response.ok) throw new Error('Erro ao processar solicitação.');
         
         fecharModalConfirmacao();
-        carregarONGsPendentes(); // Atualiza a tabela tirando a ONG da lista
+        carregarONGsPendentes();
     } catch (error) {
         console.error('Erro ao processar:', error);
         btn.textContent = 'Erro ao processar';

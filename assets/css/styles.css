@@ -1,9 +1,9 @@
-/* basicamente, eu mudei o css pra ele ter adaptabilidade aos temas de usuario, no decorrer do codigo irei explicar*/
+/* Variaveis principais do site. O JavaScript altera parte delas quando o usuario troca entre tema claro e escuro. */
 :root {
     --red-base: #E53935;
-    --red-hover: #C62828; /* cor mais escura do hover */
+    --red-hover: #C62828;
     
-    /* outras cores do projeto (essas algumas não são dinamicas */
+    /* Cores base usadas em cards, campos, textos e fundos. */
     --orange-accent: #FB8C00;
     --page-bg: #FAFAFA;
     --surface: rgba(255, 255, 255, 0.65);
@@ -16,18 +16,18 @@
     --gray-text: #5F6368;
     --white: #FFFFFF;
 
-    /* sombra dinamica do tema (essa atualiza dinamicamente) */
+    /* Sombra que tambem muda conforme o tema. */
     --theme-shadow: 0 4px 15px rgba(229, 57, 53, 0.2);
 }
 
-/* aqui serve p resetar as propriedades padrão do css  */
+/* Reset simples para evitar espacos padrao diferentes entre navegadores. */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    /* cor base do body */
+    /* O fundo recebe as cores do tema aplicado pelo script.js. */
     background-color: var(--page-bg);
     
-    /* gradiente dinamico que mistura com o fundo */
+    /* Mantem o gradiente estavel mesmo durante o scroll. */
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
@@ -37,21 +37,20 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* cabecalhos e logo adaptaveis */
-/* header com um efeito chamado glassmorphism, q fica transparente pra misturar com o fundo */
+/* Cabecalho fixo com efeito de vidro para combinar com os dois temas. */
 .header {
     position: fixed;
     top: 0; width: 100%; height: 80px;
     
-    /* fundo completamente transparente p misturar com o fundo global */
+    /* Fundo semitransparente para misturar com o fundo global. */
     background: var(--surface-strong); 
     
-    /* efeito de desfoque em pegada de vidro no header q acompanha scroll */
+    /* Desfoque do fundo, conhecido como efeito glassmorphism. */
     backdrop-filter: blur(12px); 
-    -webkit-backdrop-filter: blur(12px); /* safari */
+    -webkit-backdrop-filter: blur(12px);
     
     display: flex; align-items: center; z-index: 100;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); /* sombra bem suave */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -99,7 +98,7 @@ body {
     transform: scale(1.05); 
 }
 
-/* menu de usuário logado */
+/* Menu de usuario logado, preenchido pelo script.js quando existe sessao. */
 .usuario { display: flex; gap: 15px; align-items: center; flex-wrap: nowrap;}
 
 .usuario-identidade {

@@ -11,16 +11,19 @@
 </head>
 <body>
 
+    <!-- Estrutura principal do perfil. O perfil.js preenche praticamente todos os dados a partir da sessao e do back-end. -->
     <div class="perfil-container">
         <div>
             <div class="perfil-card">
 
+                <!-- Header personalizavel: foto, nome, e-mail e cor do banner. -->
                 <div class="perfil-header" id="perfil-header">
 
                     <button class="btn-editar-banner" id="btn-editar-banner" type="button">
                         <img src="../assets/img/color-palette.png" alt=""> Cor do banner
                     </button>
 
+                    <!-- Painel de cores do banner. A cor escolhida fica no perfil do usuario. -->
                     <div class="banner-color-panel" id="banner-color-panel">
                         <p>Escolha uma cor</p>
 
@@ -42,6 +45,7 @@
                         </div>
                     </div>
 
+                    <!-- Clicar no avatar abre o input de arquivo escondido. O upload e feito pelo back-end. -->
                     <div class="avatar-wrapper" id="avatar-wrapper" title="Clique para trocar a foto">
                         <div class="perfil-avatar" id="perfil-avatar">
                             <span id="avatar-iniciais">?</span>
@@ -62,6 +66,7 @@
 
                 <div class="perfil-body">
 
+                    <!-- Dados pessoais editaveis. CPF fica bloqueado por regra de negocio. -->
                     <h3>Editar Informações</h3>
                     <form id="form-perfil">
                         <div class="input-group">
@@ -94,6 +99,7 @@
                         </div>
                     </form>
 
+                    <!-- Endereco pode ser atualizado sem sair da pagina de perfil. -->
                     <div class="divisor">
                         <h3>Endereço</h3>
                         <p id="texto-endereco">Nenhum endereço cadastrado.</p>
@@ -142,6 +148,7 @@
                         </button>
                     </div>
 
+                    <!-- Tema preferido fica salvo no usuario e tambem no navegador como apoio local. -->
                     <div class="divisor">
                         <h3>Aparência</h3>
                         <p>Escolha como a plataforma aparece para você neste navegador.</p>
@@ -157,6 +164,7 @@
                         </div>
                     </div>
 
+                    <!-- Resumo da solicitacao de instituicao vinculada ao perfil do usuario. -->
                     <div class="divisor">
                         <h3>Instituição</h3>
                         <p>Vincule uma instituição ao seu perfil para começar a receber doações pela plataforma.</p>
@@ -171,6 +179,7 @@
                         <button type="submit" form="form-perfil" class="btn-salvar" id="btn-salvar">Salvar Alterações</button>
                     </div>
 
+                    <!-- A exclusao exige senha e confirmacao porque remove a conta de forma permanente. -->
                     <div class="divisor divisor-perigo">
                         <h3 class="titulo-perigo">Zona de Perigo</h3>
                         <p>A exclusão de conta é permanente e não pode ser desfeita. Todos os seus dados serão apagados para sempre.</p>
@@ -183,6 +192,7 @@
         </div>
     </div>
 
+    <!-- Modal de exclusao em duas etapas: senha primeiro, confirmacao definitiva depois. -->
     <div class="modal-overlay" id="modal-exclusao">
         <div class="modal-confirmacao">
             <div class="modal-etapa ativo" id="etapa-senha-exclusao">
@@ -224,6 +234,7 @@
     <div id="pop-up-erro" class="pop-up toast-erro-perfil">✕ Erro ao salvar. Tente novamente.</div>
     <div id="pop-up-foto-erro" class="pop-up toast-erro-perfil">✕ Erro ao enviar foto. Tente novamente.</div>
 
+    <!-- config.js libera a API, script.js traz funcoes globais e perfil.js controla esta tela. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/perfil.js"></script>

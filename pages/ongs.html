@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href="../assets/img/logo-deer-recortada-sem-fundo.png" type="image/x-icon">
 </head>
 <body>
+    <!-- Cabecalho compartilhado. O script.js troca os links por dados do usuario quando houver sessao. -->
     <header class="header">
         <div class="header-container">
             <a href="../index.html" class="logo">
@@ -30,7 +31,7 @@
             <p>Explore projetos sociais analisados pela plataforma e filtre por tipo de doação aceita.</p>
         </section>
 
-        <!-- Filtros e grid são preenchidos pelo assets/js/script.js com instituições aprovadas do back-end. -->
+        <!-- Filtros e grid sao preenchidos pelo assets/js/script.js com instituicoes aprovadas do back-end. -->
         <section class="ongs-listagem">
             <div class="filtros-ongs" id="filtros-ongs">
                 <button type="button" class="filtro-ong ativo" data-categoria="">Todas</button>
@@ -49,6 +50,7 @@
         </section>
     </main>
 
+    <!-- config.js precisa carregar antes porque script.js usa deerApi para buscar as instituicoes. -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/script.js"></script>
 </body>
