@@ -242,12 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (logado.tipo === 'instituicao') {
             const linkInstituicao = estaNaSubpasta ? 'instituicao.html' : 'pages/instituicao.html';
-            botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel da ONG</a>`;
+            botaoInstituicao = `<a href="${linkInstituicao}" class="login-trigger usuario-acao" font-weight: bold;">Painel da ONG</a>`;
         }
         
         if (logado.tipo === 'administrador') {
             const linkAdmin = estaNaSubpasta ? 'administracao.html' : 'pages/administracao.html';
-            botaoAdmin = `<a href="${linkAdmin}" class="login-trigger usuario-acao" style="color: var(--red-base); font-weight: bold;">Painel de Administrador</a>`;
+            botaoAdmin = `<a href="${linkAdmin}" class="login-trigger usuario-acao" font-weight: bold;">Painel de Administrador</a>`;
         }
 
         menu.style.display = 'flex';
